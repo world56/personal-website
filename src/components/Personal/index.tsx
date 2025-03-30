@@ -26,7 +26,7 @@ const Personal = async () => {
   const length = items.length;
 
   return (
-    <aside className="md:w-[300px] md:top-14 md:m-0 md:leading-normal m-3 h-full p-5 md:p-[30px] sticky text-center shadow-custom rounded-3xl bg-white dark:bg-card">
+    <aside className="md:w-[300px] md:top-14 md:m-0 md:leading-normal m-3 h-full p-4 md:p-[30px] sticky text-center shadow-custom rounded-3xl bg-white dark:bg-card">
       {local.icon ? (
         <Image
           alt="#"
@@ -35,7 +35,7 @@ const Personal = async () => {
           height={150}
           draggable="false"
           src={`${API_RESOURCE}${local.icon}`}
-          className="md:m-auto md:float-none md:w-[150px] md:h-[150px] w-24 h-24 mr-4 block rounded-full object-cover float-left"
+          className="md:m-auto md:float-none md:w-[150px] md:h-[150px] w-[5.8rem] h-[5.8rem] mr-4 block rounded-full object-cover float-left"
         />
       ) : null}
       <h1 className="md:my-6 md:text-center text-left mt-[16px] mb-[10px] text-2xl font-bold">
