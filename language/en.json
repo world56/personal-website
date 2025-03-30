@@ -211,6 +211,11 @@
     "submit": "Save Settings",
     "success": "Settings saved successfully"
   },
+  "about": {
+    "title": "About the Project",
+    "description": "If you have any questions or issues, you can submit feedback in the project's original repository.",
+    "button": "Submit Feedback"
+  },
   "tag": {
     "icon": "Icon",
     "iconRemark": "It is recommended to use black SVG icons. In dark mode, they will automatically convert to white.",
