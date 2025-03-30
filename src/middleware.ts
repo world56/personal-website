@@ -14,7 +14,7 @@ export const config = {
 export async function middleware(request: NextRequest) {
   const { cookies } = request;
   const { pathname } = request.nextUrl;
-  if (request.nextUrl.pathname === "/lib/welcome") {
+  if (pathname === "/lib/welcome") {
     insertLog({
       ip: getClientIP(request),
       key: process.env.SECRET!,
