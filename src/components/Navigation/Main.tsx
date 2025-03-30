@@ -33,7 +33,7 @@ const MainNavigation = () => {
     setName(
       routes.find((v) => v.url === `/${path?.split("/")?.at(1) || ""}`)?.title,
     );
-  }, [path]);
+  }, [routes, path]);
 
   return (
     <nav className="md:absolute md:top-[5px] md:h-[65px] w-full z-10 fixed bottom-3 h-[54px] left-0 flex justify-between items-center">

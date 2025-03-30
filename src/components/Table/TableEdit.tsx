@@ -207,7 +207,7 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
         ),
       },
     ],
-    [name, form, fields, remove, move],
+    [name, form, fields, remove, move, t, tCommon],
   );
 
   return (
