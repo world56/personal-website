@@ -185,7 +185,7 @@ export function register(data: Pick<User, "account" | "password">) {
  * @name updatePwd 修改管理员密码
  */
 export function updatePwd(data: Record<"password" | "newPassword", string>) {
-  return request<boolean>(`/api/auth/password`, {
+  return request<boolean>(`/api/auth/pwd`, {
     method: "PUT",
     data,
   });
