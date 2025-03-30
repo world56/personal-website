@@ -2,6 +2,8 @@ import type { Cacheable } from "cacheable";
 import type { EditorManager } from "tinymce";
 import type { PrismaClient, Msg, Post, Tag } from "@prisma/client";
 
+import { ENUM_COMMON } from "@/enum/common";
+
 declare global {
   interface Window {
     tinymce?: EditorManager;
@@ -87,7 +89,9 @@ export namespace TypeCommon {
    */
   export interface QueryPosts
     extends PageTurning,
-      Partial<Pick<Post, "title" | "type" | "status">> {}
+      Partial<Pick<Post, "title" | "status">> {
+    type: ENUM_COMMON.POST_TYPE;
+  }
 
   /**
    * @name UpdatePost 编辑 “文本”

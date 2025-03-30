@@ -23,6 +23,8 @@ import "prismjs/components/prism-csharp.min.js";
 import "prismjs/components/prism-javascript.min.js";
 import "prismjs/components/prism-markup-templating.min.js";
 
+import { POST_PATH } from "@/config/common";
+
 import { ENUM_COMMON } from "@/enum/common";
 
 import type { Post } from "@prisma/client";
@@ -94,7 +96,10 @@ export async function generateStaticParams() {
   const res = await prisma.post.findMany({
     where: { status: ENUM_COMMON.STATUS.ENABLE },
   });
-  return res.map((v) => ({ id: String(v.id), type: v.type }));
+  return res.map((v) => ({
+    id: String(v.id),
+    type: POST_PATH[v.type as ENUM_COMMON.POST_TYPE],
+  }));
 }
 
 const Post: React.FC<TypePostProps> = async ({ params: { id } }) => {

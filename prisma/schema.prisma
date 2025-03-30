@@ -54,7 +54,7 @@ model Msg {
 model Post {
   id          Int      @id @default(autoincrement())
   title       String
-  type        String
+  type        Int
   icon        String
   description String?
   footer      String?

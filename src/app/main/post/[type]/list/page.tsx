@@ -10,7 +10,7 @@ import { ENUM_COMMON } from "@/enum/common";
  * @name Posts 文本内容
  */
 const Posts = () => {
-  const { type, data, query, loading, setQuery } = usePosts(
+  const { path, data, query, loading, setQuery } = usePosts(
     ENUM_COMMON.STATUS.ENABLE,
   );
 
@@ -27,7 +27,7 @@ const Posts = () => {
             src={v.icon}
             name={v.title}
             desc={v.description}
-            url={`/${type}/${v.id}`}
+            url={`/${path}/${v.id}`}
           />
         ))}
       </List>

@@ -69,17 +69,17 @@ export namespace ENUM_COMMON {
    */
   export enum POST_TYPE {
     /**
-     * @param project 项目、成果
+     * @param LIFE 生活
      */
-    PROJECTS = "projects",
+    LIFE,
     /**
      * @param NOTES 笔记
      */
-    NOTES = "notes",
+    NOTE,
     /**
-     * @param LIFE 生活
+     * @param project 项目、成果
      */
-    LIFE = "life",
+    PROJECT,
   }
 
   /**

@@ -26,6 +26,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import { getPost, insertPost, updatePost } from "@/app/api";
 
+import { POST_TYPE } from "@/config/common";
+
 import type { TypeCommon } from "@/interface/common";
 
 const Edit = () => {
@@ -47,7 +49,7 @@ const Edit = () => {
 
   const params = useParams<Record<"id" | "type", string>>();
   const id = Number(params?.id!);
-  const type = params?.type!;
+  const type = params?.type! as keyof typeof POST_TYPE;
 
   const IS_ADD = id === -1;
 
@@ -80,7 +82,7 @@ const Edit = () => {
   async function onSubmit(values: TypeCommon.UpdatePost) {
     try {
       setSubmitLoad(true);
-      values.type = type;
+      values.type = POST_TYPE[type];
       if (IS_ADD) await insertPost(values);
       else await updatePost(values);
       setSubmitLoad(false);

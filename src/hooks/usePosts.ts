@@ -9,6 +9,8 @@ import { useTranslations } from "next-intl";
 import { getClientPosts, getPosts } from "@/app/api";
 import { useDebounceEffect, useRequest } from "ahooks";
 
+import { POST_TYPE } from "@/config/common";
+
 import { ENUM_COMMON } from "@/enum/common";
 
 import type { TypeCommon } from "@/interface/common";
@@ -19,15 +21,13 @@ import type { TypeCommon } from "@/interface/common";
 export default function usePosts(status?: ENUM_COMMON.STATUS) {
   const t = useTranslations("menu");
 
-  const TITLE = {
-    [ENUM_COMMON.POST_TYPE.LIFE]: t("life"),
-    [ENUM_COMMON.POST_TYPE.NOTES]: t("notes"),
-    [ENUM_COMMON.POST_TYPE.PROJECTS]: t("projects"),
-  };
+  const params = useParams<{ type: keyof typeof POST_TYPE }>();
 
-  const params = useParams<{ type: ENUM_COMMON.POST_TYPE }>();
-  const type = params?.type!;
-  const title = TITLE[type];
+  const type = POST_TYPE[params!.type];
+
+  const title = { life: t("life"), notes: t("notes"), projects: t("projects") }[
+    params!.type
+  ];
 
   const router = useRouter();
   const pathname = usePathname();
@@ -97,5 +97,6 @@ export default function usePosts(status?: ENUM_COMMON.STATUS) {
     title,
     query,
     setQuery,
+    path: params!.type,
   };
 }

@@ -5,11 +5,15 @@ import { ENUM_COMMON } from "@/enum/common";
 
 import type { NextRequest } from "next/server";
 
-const POST_TYPE = Object.values(ENUM_COMMON.POST_TYPE);
+const POST_TYPE = [
+  ENUM_COMMON.POST_TYPE.LIFE,
+  ENUM_COMMON.POST_TYPE.NOTE,
+  ENUM_COMMON.POST_TYPE.PROJECT,
+];
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
-  const type = searchParams.get("type")! as ENUM_COMMON.POST_TYPE;
+  const type = Number(searchParams.get("type")!) as ENUM_COMMON.POST_TYPE;
   if (!POST_TYPE.includes(type)) {
     return NextResponse.json("Parameter exception", { status: 400 });
   }

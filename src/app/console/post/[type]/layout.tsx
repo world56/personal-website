@@ -2,15 +2,15 @@
 
 import { useParams, redirect } from "next/navigation";
 
-import { ENUM_COMMON } from "@/enum/common";
+import { POST_TYPE, POST_PATH } from "@/config/common";
 
 interface TypeLayoutProps {
   children?: React.ReactNode;
 }
 
 const Layout: React.FC<TypeLayoutProps> = ({ children }) => {
-  const params = useParams<{ type: ENUM_COMMON.POST_TYPE }>();
-  if (Object.values(ENUM_COMMON.POST_TYPE).includes(params?.type!)) {
+  const params = useParams<{ type: keyof typeof POST_TYPE }>();
+  if (Object.values(POST_PATH).includes(params?.type!)) {
     return children;
   } else {
     return redirect("/console/post/life");

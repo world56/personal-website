@@ -32,10 +32,10 @@ const Posts = () => {
 
   const [deleteId, setDeleteId] = useState<Post["id"]>();
 
-  const { title, query, type, data, loading, run, setQuery } = usePosts();
+  const { title, query, path, type, data, loading, run, setQuery } = usePosts();
 
   function onEdit(row?: Post) {
-    router.push(`/console/post/${type}/${row?.id || -1}`);
+    router.push(`/console/post/${path}/${row?.id || -1}`);
   }
 
   async function onStatus({ id }: Post, status: boolean) {
@@ -57,7 +57,7 @@ const Posts = () => {
   }
 
   function onSkip(row: Post) {
-    window.open(`/${type}/${row.id}`);
+    window.open(`/${path}/${row.id}`);
   }
 
   async function onDelete(id?: Post["id"]) {
