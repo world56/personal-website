@@ -240,6 +240,15 @@ export function deleteLog(params: Pick<Log, "id">) {
 }
 
 /**
+ * @name deleteAllAccessLogs 删除全部访问日志
+ */
+export function deleteAllAccessLogs() {
+  return request<boolean>(`/api/auth/log/access`, {
+    method: "DELETE",
+  });
+}
+
+/**
  * @name getResources 获取资源列表
  */
 export function getResources(

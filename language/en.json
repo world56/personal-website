@@ -184,7 +184,9 @@
     "IPDesc": "Visitor IPs may be affected by various factors, and accuracy cannot be guaranteed. For reference only.",
     "deleteHint": "Only visitor logs can be deleted",
     "code": "Status Code",
-    "createTime": "Occurrence Time"
+    "createTime": "Occurrence Time",
+    "clearLogs": "Clear Logs",
+    "clearLogsHint": "This action will delete all 'Visitor Access' log records. Please proceed with caution!"
   },
   "password": {
     "title": "Admin Password",

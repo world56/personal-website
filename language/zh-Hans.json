@@ -184,7 +184,9 @@
     "IPDesc": "访客IP会因多种因素受到干扰，准确性难以保证，仅供参考",
     "deleteHint": "仅可删除访客日志",
     "code": "状态码",
-    "createTime": "发生时间"
+    "createTime": "发生时间",
+    "clearLogs": "清空日志",
+    "clearLogsHint": "该操作会删除所有的“访客访问”日志记录，请谨慎操作！"
   },
   "password": {
     "title": "管理员密码",

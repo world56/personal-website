@@ -12,6 +12,7 @@ import DataTable from "@/components/Table";
 import Tooltip from "@/components/Tooltip";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
+import ClearLogs from "./components/ClearLogs";
 import LoadingButton from "@/components/Button";
 import { Button } from "@/components/ui/button";
 import PageTurning from "@/components/PageTurning";
@@ -58,6 +59,11 @@ const Logs = () => {
 
   function onIPChange(e: React.ChangeEvent<HTMLInputElement>) {
     setQuery((v) => ({ ...v, current: 1, ip: e.target.value }));
+  }
+
+  function onRefresh() {
+    setQuery((e) => ({ ...e, current: 1 }));
+    visits.run();
   }
 
   function onTimeChange(e?: DateRange) {
@@ -164,20 +170,19 @@ const Logs = () => {
             placeholder={t("type")}
             onChange={onTypeChange}
           />
-
           <Input
             className="w-60 ml-3"
             onChange={onIPChange}
             defaultValue={query.ip!}
             placeholder={t("IPPlaceholder")}
           />
-
           <DateRangePicker onChange={onTimeChange} className="mx-3" />
           <LoadingButton
             loading={loading}
             icon={SyncOutlined}
             onClick={() => run()}
           />
+          <ClearLogs onRefresh={onRefresh} />
         </div>
         <DataTable
           loading={loading}
