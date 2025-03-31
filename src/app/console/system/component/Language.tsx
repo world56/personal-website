@@ -26,6 +26,8 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getLanguage, updateLanguage } from "@/app/api";
 
+import { ENUM_COMMON } from "@/enum/common";
+
 const Language = () => {
   const t = useTranslations("language");
 
@@ -75,11 +77,15 @@ const Language = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="zh-Hans">简体中文</SelectItem>
-                      <SelectItem value="zh-Hant">繁體中文</SelectItem>
-                      <SelectItem value="en">English</SelectItem>
-                      {/* <SelectItem value="ko">한국어</SelectItem> */}
-                      {/* <SelectItem value="ja">日本語</SelectItem> */}
+                      <SelectItem value={ENUM_COMMON.LANG.ZH_HANS}>
+                        简体中文
+                      </SelectItem>
+                      <SelectItem value={ENUM_COMMON.LANG.ZH_HANT}>
+                        繁體中文
+                      </SelectItem>
+                      <SelectItem value={ENUM_COMMON.LANG.EN}>
+                        English
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>

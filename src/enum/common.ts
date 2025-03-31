@@ -99,4 +99,20 @@ export namespace ENUM_COMMON {
      */
     PASSWORD,
   }
+
+  export enum LANG {
+    /**
+     * @param EN 英语
+     * @description 美式
+     */
+    EN = "en",
+    /**
+     * @param ZH_HANS 简体中文
+     */
+    ZH_HANS = "zh-Hans",
+    /**
+     * @param ZH_HANT 繁体中文
+     */
+    ZH_HANT = "zh-Hant",
+  }
 }

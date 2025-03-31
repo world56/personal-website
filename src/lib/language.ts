@@ -1,12 +1,14 @@
 import { createTranslator } from "next-intl";
 import { zhCN, zhTW } from "date-fns/locale";
 
+import { ENUM_COMMON } from "@/enum/common";
+
 export function checkLanguage(language: any) {
-  return ["zh-Hans", "zh-Hant", "en"].includes(language);
+  return Object.values(ENUM_COMMON.LANG).includes(language);
 }
 
 export function getHtmlLanguage() {
-  return document?.getElementsByTagName("html")[0].lang;
+  return document?.getElementsByTagName("html")[0].lang as ENUM_COMMON.LANG;
 }
 
 export default async function getClientI18n() {
@@ -18,9 +20,9 @@ export default async function getClientI18n() {
 export function getTinymceLanguage() {
   const language = getHtmlLanguage();
   switch (language) {
-    case "zh-Hans":
+    case ENUM_COMMON.LANG.ZH_HANS:
       return { language: "zh_CN", language_url: "/lib/tinymce/langs/zh_CN.js" };
-    case "zh-Hant":
+    case ENUM_COMMON.LANG.ZH_HANT:
       return { language: "zh_TW", language_url: "/lib/tinymce/langs/zh_TW.js" };
     default:
       return {};
@@ -30,9 +32,9 @@ export function getTinymceLanguage() {
 export function getTimeLanguage() {
   const language = getHtmlLanguage();
   switch (language) {
-    case "zh-Hans":
+    case ENUM_COMMON.LANG.ZH_HANS:
       return zhCN;
-    case "zh-Hant":
+    case ENUM_COMMON.LANG.ZH_HANT:
       return zhTW;
     default:
       return;

@@ -1,7 +1,6 @@
 "use client";
 
 import { toast } from "sonner";
-import { usePosts } from "@/hooks";
 import Card from "@/components/Card";
 import Select from "@/components/Select";
 import { dateToTime } from "@/lib/format";
@@ -16,6 +15,7 @@ import LoadingButton from "@/components/Button";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { SyncOutlined } from "@ant-design/icons";
+import { useClientLang, usePosts } from "@/hooks";
 import PageTurning from "@/components/PageTurning";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { deletePost, updatePostStatus } from "@/app/api";
@@ -32,6 +32,7 @@ const Posts = () => {
 
   const [deleteId, setDeleteId] = useState<Post["id"]>();
 
+  const lang = useClientLang();
   const { title, query, path, type, data, loading, run, setQuery } = usePosts();
 
   function onEdit(row?: Post) {
@@ -154,7 +155,11 @@ const Posts = () => {
   ];
 
   return (
-    <Card spacing={4} title={title} description={`${t("description")}${title}`}>
+    <Card
+      spacing={4}
+      title={title}
+      description={`${t("description")}${lang === "en" ? " " : ""}${title}`}
+    >
       <div className="flex justify-between">
         <div className="flex">
           <Select
