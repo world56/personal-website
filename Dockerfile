@@ -6,6 +6,7 @@ RUN mkdir -p builder
 
 COPY package*.json ./builder/
 COPY ./prisma ./builder/prisma
+COPY ./language ./builder/language
 COPY ./public ./builder/public
 COPY ./src ./builder/src
 COPY ./next.config.js ./builder/next.config.js
