@@ -66,7 +66,7 @@ class LocalStorage {
    * @name language 获取系统语言
    */
   language() {
-    const language = this.get().language || process.env.SECRET;
+    const language = this.get().language || process.env.LANG;
     return checkLanguage(language) ? language : "zh-Hans";
   }
 }
