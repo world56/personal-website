@@ -20,6 +20,7 @@ RUN chmod +x ./docker.sh
 WORKDIR /app/builder
 
 RUN npm i --verbose
+RUN npx next telemetry disable
 RUN npx prisma generate
 
 ENTRYPOINT ["/app/docker.sh"]

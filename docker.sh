@@ -21,7 +21,7 @@ else
   fi
 
   npx prisma db push
-  npm run build --verbose
+  npm run build
 
   cp -r ./build/. ../
 
