@@ -1,3 +1,9 @@
+<div align="center">
+
+[English](./README-en.md) · 中文
+
+</div>
+
 <p align="center">
   <a href="https://devtt.com">
     <img width="72" src="https://raw.githubusercontent.com/world56/static/main/website/icon.svg">
@@ -25,6 +31,9 @@
 - 🌗 **支持浅色、深色主题**  
   根据系统设置，自动调整白日、夜间皮肤
 
+- 📖 **多语言**  
+  支持简体中文、繁体中文、English
+
 - 🌏 **SEO**  
   深度实践，支持各大搜索引擎[SEO](https://github.com/world56/static/tree/main/website#-seo%E6%95%88%E6%9E%9C%E9%A2%84%E8%A7%88)
 
@@ -43,9 +52,6 @@
 - 🤩 **访客日志**  
   访客日志功能，帮助您了解访客的访问频率。
 
-- 💾 **内存占用**  
-  平均内存占用空间小，通常70 - 90MiB
-
 - 🐳 **Docker**  
   支持 docker 多个镜像源，一键部署，降低心智负担
 
@@ -57,6 +63,12 @@ DATABASE_URL = mysql://root:pwd@localhost:3306/website
 
 # 系统密钥（必填）
 SECRET = your_key
+
+# 系统语言（默认zh-Hans）
+# zh-Hans 简体中文
+# zh-Hant 繁體中文
+# en      English
+LANG = zh-Hans
 ```
 
 ## 👷 本地开发 Development
@@ -88,7 +100,7 @@ $ docker pull registry.cn-hangzhou.aliyuncs.com/world56/website
 
 ```bash
 # 静态资源托管在/app/resource目录，请绑定数据卷（-v），防止资源丢失。
-$ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e SECRET=your_key -v ~/app/website/resource:/app/resource world56/website
+$ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e SECRET=your_key -e LANG=zh-Hans -v ~/app/website/resource:/app/resource world56/website
 ```
 
 ---
@@ -144,6 +156,10 @@ server {
 }
 
 ```
+
+## 🚀 迁移升级
+仍在使用1.0、1.2版本号的用户，若升级至1.3.0及以上版本，需要手动执行[SQL文件](https://github.com/world56/personal-website/blob/main/upgrade/post_type.sql)。此次升级修改了post表type字段类型，为未来应用可扩展做好准备。
+
 
 ## 🔍 访问地址（例）
 
