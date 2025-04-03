@@ -1,12 +1,16 @@
 export const CONFIG = {
-  relative_urls: false,
-  remove_script_host: false,
-  language: "zh_CN",
   license_key: "gpl",
-  language_url: "/lib/tinymce/langs/zh_CN.js",
-  font_size_formats:
-    "8pt 9pt 10pt 11pt 12pt 13pt 14pt 15pt 16pt 18pt 24pt 36pt 42pt",
+  skin: false,
+  content_css: false,
+  verify_html: false,
+  relative_urls: false,
+  sandbox_iframes: false,
   codesample_global_prismjs: true,
+  custom_elements:
+    "media-controller,media-control-bar,media-play-button,media-time-display,media-time-range,media-playback-rate-button,media-mute-button,media-volume-range",
+  extended_valid_elements:
+    "media-controller[audio|class|contenteditable|gesturesdisabled|mceNonEditable|style]",
+  valid_elements: "media-controller",
   codesample_languages: [
     { text: "HTML/XML", value: "markup" },
     { text: "JavaScript/TypeScript", value: "javascript" },
@@ -25,47 +29,27 @@ export const CONFIG = {
     { text: "C", value: "c" },
     { text: "C#", value: "csharp" },
     { text: "C++", value: "cpp" },
+    { text: "Scala", value: "scala" },
+    { text: "Dockerfile", value: "docker" },
+    { text: "Nginx", value: "nginx" },
   ],
   plugins: [
-    "advlist",
-    "autolink",
     "lists",
     "link",
-    "image",
-    "charmap",
-    "preview",
-    "anchor",
-    "searchreplace",
-    "visualblocks",
-    "fullscreen",
-    "insertdatetime",
-    "media",
     "table",
+    "image",
+    "preview",
+    "checklist",
+    "pageembed",
+    "editimage",
     "codesample",
-    "wordcount",
-    "emoticons",
+    "fullscreen",
+    "searchreplace",
   ],
   toolbar1: `
-    blocks fontfamily fontsize |
-    forecolor backcolor bold italic underline strikethrough removeformat | alignleft aligncenter alignright alignjustify 
-    bullist numlist outdent indent |
-    link uploadImage uploadVideo | blockquote title table codesample
+    blocks fontsizeinput 
+    | forecolor backcolor bold italic underline title codetag
+    | align lineheight numlist bullist checklist table
+    | upload pageembed codesample
   `,
-};
-
-export const HTML_TEMPLATE = {
-  TITLE: `<span style='
-      width: max-content;
-      height: 45px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 39px;
-      font-weight: bold;
-      font-size: 16px;
-      color: #fff;
-      margin: 30px 0;
-      background: black;
-      border-radius: 1px 20px;
-    '><span>标题</span></span> `,
 };

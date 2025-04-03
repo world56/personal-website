@@ -6,10 +6,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { format } from "date-fns";
-import { zhCN } from "date-fns/locale";
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { getTimeLanguage } from "@/lib/language";
 import { Calendar } from "@/components/ui/calendar";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -27,6 +28,9 @@ const DateRangePicker: React.FC<TypeRangePickerProps> = ({
   onChange,
   className,
 }) => {
+  const t = useTranslations("common");
+
+  const [locale, setLocale] = useState<Locale>();
   const [date, setDate] = useState<DateRange | undefined>(value);
 
   function onClear(e: React.MouseEvent<HTMLOrSVGElement>) {
@@ -40,12 +44,16 @@ const DateRangePicker: React.FC<TypeRangePickerProps> = ({
     onChange?.(e?.to ? e : undefined);
   }
 
+  useEffect(() => {
+    setLocale(getTimeLanguage());
+  }, []);
+
   return (
     <div className={cn("grid gap-2 relative", className)}>
       {date?.to ? (
         <CloseCircleOutlined
           onClick={onClear}
-          className="absolute top-[10px] right-[16px] z-10 cursor-pointer text-gray-500 hover:text-black"
+          className="absolute top-[10px] right-[16px] z-10 cursor-pointer text-gray-500 hover:text-black dark:hover:text-white"
         />
       ) : null}
       <Popover>
@@ -54,7 +62,7 @@ const DateRangePicker: React.FC<TypeRangePickerProps> = ({
             id="date"
             variant="outline"
             className={cn(
-              "w-[265px] justify-start text-left font-normal",
+              "w-[265px] justify-start text-left font-normal bg-card",
               !date && "text-muted-foreground",
             )}
           >
@@ -62,14 +70,14 @@ const DateRangePicker: React.FC<TypeRangePickerProps> = ({
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, "yyyy-MM-dd", { locale: zhCN })} -{" "}
-                  {format(date.to, "yyyy-MM-dd", { locale: zhCN })}
+                  {format(date.from, "yyyy-MM-dd", { locale })} -{" "}
+                  {format(date.to, "yyyy-MM-dd", { locale })}
                 </>
               ) : (
-                format(date.from, "yyyy-MM-dd", { locale: zhCN })
+                format(date.from, "yyyy-MM-dd", { locale })
               )
             ) : (
-              <span>选择时间范围</span>
+              <span>{t("TimeRangePlaceholder")}</span>
             )}
           </Button>
         </PopoverTrigger>
@@ -77,7 +85,7 @@ const DateRangePicker: React.FC<TypeRangePickerProps> = ({
           <Calendar
             initialFocus
             mode="range"
-            locale={zhCN}
+            locale={locale}
             selected={date}
             numberOfMonths={2}
             onSelect={onTimeChange}

@@ -1,4 +1,6 @@
+const fs = require("fs");
 const path = require("path");
+const createNextIntlPlugin = require("next-intl/plugin");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -22,6 +24,19 @@ const nextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: "/lib/welcome",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=900, must-revalidate",
+          },
+        ],
+      },
+    ];
+  },
   async rewrites() {
     return [
       {
@@ -37,12 +52,12 @@ const nextConfig = {
         destination: "/main/post/life/:id",
       },
       {
-        source: "/achievements",
-        destination: "/main/post/achievements/list",
+        source: "/projects",
+        destination: "/main/post/projects/list",
       },
       {
-        source: "/achievements/:id",
-        destination: "/main/post/achievements/:id",
+        source: "/projects/:id",
+        destination: "/main/post/projects/:id",
       },
       {
         source: "/notes",
@@ -53,8 +68,8 @@ const nextConfig = {
         destination: "/main/post/notes/:id",
       },
       {
-        source: "/contact",
-        destination: "/main/contact",
+        source: "/message",
+        destination: "/main/message",
       },
     ];
   },
@@ -72,6 +87,14 @@ if (process.env.NODE_ENV === "development") {
             filter: (resourcePath) =>
               /(\.min\.js|\Hans\.js|\.min\.css)$/.test(resourcePath),
           },
+          {
+            from: path.join(
+              __dirname,
+              "node_modules/media-chrome/dist/iife/index.js",
+            ),
+            to: path.join(__dirname, "public/lib/player"),
+            filter: (path) => !fs.existsSync(path),
+          },
         ],
       }),
     );
@@ -79,4 +102,4 @@ if (process.env.NODE_ENV === "development") {
   };
 }
 
-module.exports = nextConfig;
+module.exports = createNextIntlPlugin()(nextConfig);

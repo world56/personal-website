@@ -9,6 +9,10 @@ else
   echo ""
   echo "Warning: Container initialization, ready for building."
   echo ""
+  echo "Warning: If migrating to version v1.3.0 or higher, it is necessary to manually execute the SQL file."
+  echo "https://github.com/world56/personal-website/blob/main/upgrade/post_type.sql"
+  echo ""
+  echo ""
 
   cd ./builder
   mkdir -p resource
@@ -17,11 +21,9 @@ else
   fi
 
   npx prisma db push
-  npm run build --verbose
+  npm run build
 
-  cp -r ./public ../
-  cp -r .next/static .next/standalone/.next/
-  cp -r ./.next/standalone/. ../
+  cp -r ./build/. ../
 
   cd ../
   rm -rf ./builder

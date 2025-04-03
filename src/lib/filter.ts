@@ -1,5 +1,8 @@
 import { toast } from "sonner";
 import { filesize } from "filesize";
+import getClientI18n from "@/lib/language";
+
+import { ENUM_COMMON } from "@/enum/common";
 
 import type { TypeCommon } from "@/interface/common";
 
@@ -40,16 +43,51 @@ export function filterCUD<
 }
 
 /**
+ * @name getFileType 获取资源类型
+ */
+export function getFileType(fileName: string) {
+  const suffix = fileName.split(".")?.pop()?.toLocaleUpperCase()!;
+  if (["SVG", "JPG", "JPEG", "PNG", "WEBP"].includes(suffix)) {
+    return ENUM_COMMON.RESOURCE.IMAGE;
+  } else if (["MP4"].includes(suffix)) {
+    return ENUM_COMMON.RESOURCE.VIDEO;
+  } else if (["MP3", "ACC", "M4A"].includes(suffix)) {
+    return ENUM_COMMON.RESOURCE.AUDIO;
+  } else {
+    return ENUM_COMMON.RESOURCE.UNKNOWN;
+  }
+}
+
+/**
  * @name verifyFile 校验文件格式
  * @param file 文件对象
  * @param type 校验文件类型
  */
 function verifyFile(file: File, size?: number) {
-  if (size === undefined) return true;
-  if (file.size > size) {
-    const maxSize = filesize(size);
-    toast.error("文件大小超过最大限制", {
-      description: `${file.name} 文件，超过上传最大限制${maxSize}，上传失败`,
+  let MAX_SIZE = size || 0;
+  if (size === undefined) {
+    switch (getFileType(file.name)) {
+      case ENUM_COMMON.RESOURCE.IMAGE:
+        MAX_SIZE = 10485760;
+        break;
+      case ENUM_COMMON.RESOURCE.VIDEO:
+        MAX_SIZE = 31457280;
+        break;
+      case ENUM_COMMON.RESOURCE.AUDIO:
+        MAX_SIZE = 15728640;
+        break;
+      default:
+        break;
+    }
+  }
+  if (file.size > MAX_SIZE) {
+    getClientI18n().then((t) => {
+      toast.error(t("hint.fileLimit"), {
+        description: t("hint.fileTooLarge", {
+          fileName: file.name,
+          maxSize: filesize(MAX_SIZE),
+        }),
+      });
     });
     return false;
   } else {
@@ -67,7 +105,7 @@ export function getUploadFiles(params: {
   multiple?: boolean;
 }) {
   const { accept, multiple, size } = params;
-  return new Promise<FormData>((resolve, reject) => {
+  return new Promise<FormData[]>((resolve, reject) => {
     const btn = document.createElement("input");
     btn.setAttribute("type", "file");
     multiple && btn.setAttribute("multiple", "true");
@@ -76,29 +114,18 @@ export function getUploadFiles(params: {
     btn.onchange = async (e) => {
       try {
         const { files } = e.target as HTMLInputElement;
-        const body = new FormData();
-        Array.prototype.forEach.call(files, (file: File) => {
-          verifyFile(file, size) && body.append("files", file);
+        const chunks: FormData[] = [];
+        Array.prototype.forEach.call(files, async (file: File) => {
+          if (verifyFile(file, size)) {
+            const body = new FormData();
+            body.append("file", file);
+            chunks.push(body);
+          }
         });
-        if (body.getAll("files").length) {
-          return resolve(body);
-        } else {
-          return reject();
-        }
+        return chunks.length ? resolve(chunks) : reject();
       } catch (error) {
         reject(error);
       }
     };
   });
-}
-
-/**
- * @name toJSON 转换成JSON
- */
-export function toJSON(str: string) {
-  try {
-    return JSON.parse(str);
-  } catch (error) {
-    return undefined;
-  }
 }

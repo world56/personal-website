@@ -1,6 +1,30 @@
+import type { Cacheable } from "cacheable";
+import type { EditorManager } from "tinymce";
+import type { PrismaClient, Msg, Post, Tag } from "@prisma/client";
+
 import { ENUM_COMMON } from "@/enum/common";
 
-import type { Msg, Post, Tag } from "@prisma/client";
+declare global {
+  interface Window {
+    tinymce?: EditorManager;
+  }
+  var prisma: PrismaClient;
+  var cacheable: Cacheable & {
+    incr(params: {
+      ttl?: string;
+      maximum?: number;
+      key: string | null | undefined;
+    }): Promise<number | false>;
+    decr(key: string): Promise<void>;
+  };
+  var DBlocal: {
+    FOLDER_PATH: string;
+    set(data: object): Record<string, string>;
+    get(): Record<string, string | number>;
+    remove(path: string): boolean;
+    language(): string;
+  };
+}
 
 export namespace TypeCommon {
   /**
@@ -65,7 +89,9 @@ export namespace TypeCommon {
    */
   export interface QueryPosts
     extends PageTurning,
-      Partial<Pick<Post, "title" | "type" | "status">> {}
+      Partial<Pick<Post, "title" | "status">> {
+    type: ENUM_COMMON.POST_TYPE;
+  }
 
   /**
    * @name UpdatePost 编辑 “文本”
@@ -73,6 +99,7 @@ export namespace TypeCommon {
   export interface UpdatePost
     extends Partial<Pick<Post, "id">>,
       Pick<Post, "icon" | "title" | "type" | "content"> {
+    footer?: string;
     description?: string;
   }
 
@@ -94,20 +121,6 @@ export namespace TypeCommon {
   }
 
   /**
-   * @name File 文件列表
-   */
-  export interface File {
-    /**
-     * @param type 文件类型
-     */
-    type: ENUM_COMMON.UPLOAD_FILE_TYPE;
-    /**
-     * @param url 文件地址
-     */
-    url: string;
-  }
-
-  /**
    * @name ISR 按需渲染
    */
   export interface ISR {
@@ -119,5 +132,9 @@ export namespace TypeCommon {
      * @param 类型
      */
     type?: "layout" | "page";
+    /**
+     * @param key 内部验证
+     */
+    key: string;
   }
 }

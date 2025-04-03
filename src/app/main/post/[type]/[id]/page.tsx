@@ -2,9 +2,7 @@ import Prism from "prismjs";
 import { cache } from "react";
 import { prisma } from "@/lib/db";
 import Empty from "@/components/Empty";
-import { dateToTime } from "@/lib/format";
-import ReadingTools from "@/components/Tools";
-import { FieldTimeOutlined } from "@ant-design/icons";
+import PostTools from "@/components/PostTools";
 
 import "prismjs/components/prism-c.min.js";
 import "prismjs/components/prism-go.min.js";
@@ -16,12 +14,16 @@ import "prismjs/components/prism-java.min.js";
 import "prismjs/components/prism-rust.min.js";
 import "prismjs/components/prism-dart.min.js";
 import "prismjs/components/prism-swift.min.js";
+import "prismjs/components/prism-nginx.min.js";
+import "prismjs/components/prism-scala.min.js";
+import "prismjs/components/prism-docker.min.js";
 import "prismjs/components/prism-kotlin.min.js";
 import "prismjs/components/prism-python.min.js";
 import "prismjs/components/prism-csharp.min.js";
-import "prismjs/components/prism-csharp.min.js";
 import "prismjs/components/prism-javascript.min.js";
 import "prismjs/components/prism-markup-templating.min.js";
+
+import { POST_PATH } from "@/config/common";
 
 import { ENUM_COMMON } from "@/enum/common";
 
@@ -59,20 +61,24 @@ function highlightCodeInRichText(richText: string) {
   let match;
   while ((match = codeBlockRegex.exec(richText)) !== null) {
     const [text, language, code] = match;
-    const beautifyCode = Prism.highlight(
-      formatEntities(code),
-      Prism.languages[language],
-      language,
-    );
-    highlightedRichText = highlightedRichText.replace(
-      text,
-      `<pre class="language-${language}">${beautifyCode}</pre>`,
-    );
+    const grammar = Prism.languages?.[language];
+    if (grammar) {
+      const beautifyCode = Prism.highlight(
+        formatEntities(code),
+        grammar,
+        language,
+      );
+      highlightedRichText = highlightedRichText.replace(
+        text,
+        `<pre class="language-${language}">${beautifyCode}</pre>`,
+      );
+    }
   }
   return highlightedRichText;
 }
 
 const requestPost = cache(async (id?: number) => {
+  if (isNaN(Number(id))) return null;
   return await prisma.post.findUnique({
     where: { id: Number(id), status: ENUM_COMMON.STATUS.ENABLE },
   });
@@ -81,7 +87,7 @@ const requestPost = cache(async (id?: number) => {
 export async function generateMetadata({ params: { id } }: TypePostProps) {
   const res = await requestPost(id);
   return {
-    title: res?.title ? res.title : "没有找到相关内容",
+    title: res?.title ? res.title : "not found",
     description: res?.description,
   };
 }
@@ -90,35 +96,37 @@ export async function generateStaticParams() {
   const res = await prisma.post.findMany({
     where: { status: ENUM_COMMON.STATUS.ENABLE },
   });
-  return res.map((v) => ({ id: String(v.id), type: v.type }));
+  return res.map((v) => ({
+    id: String(v.id),
+    type: POST_PATH[v.type as ENUM_COMMON.POST_TYPE],
+  }));
 }
 
 const Post: React.FC<TypePostProps> = async ({ params: { id } }) => {
   const res = await requestPost(id);
   if (res) {
-    const time = dateToTime(res.createTime);
     const __html = highlightCodeInRichText(res.content);
     return (
-      <>
-        <h1 className="text-3xl font-bold mt-[10px] mb-[22px] break-words whitespace-normal">
-          {res.title}
-        </h1>
-        <div className="flex justify-between items-center pb-5 mb-6 text-gray-400 border-b border-grey-100">
-          <time dateTime={time} className="flex items-center text-[14px]">
-            <FieldTimeOutlined className="mr-1" />
-            {time}
-          </time>
-          <ReadingTools />
-        </div>
-        <div
-          style={{ minHeight: 398 }}
+      <article>
+        <header>
+          <h1 className="text-3xl font-bold mt-[10px] mb-[22px] break-words whitespace-normal">
+            {res.title}
+          </h1>
+          <PostTools title={res.title} date={res.createTime} />
+        </header>
+
+        <section
           dangerouslySetInnerHTML={{ __html }}
-          className="mce-content-body no-tailwindcss-base"
+          className="mce-content-body no-tailwindcss min-h-[340px] md:min-h-[398px]"
         />
-        <p className="text-sm mt-3 text-gray-400 text-center select-none">
-          © 著作权归作者所有 转载请注明原链接
-        </p>
-      </>
+        {res?.footer ? (
+          <footer>
+            <p className="text-sm mt-8 text-gray-400 text-center select-none">
+              {res.footer}
+            </p>
+          </footer>
+        ) : null}
+      </article>
     );
   } else {
     return <Empty height={520} />;

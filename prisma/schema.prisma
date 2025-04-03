@@ -19,8 +19,8 @@ model User {
   password   String
   createTime DateTime @default(now()) @map("create_time")
 
-  @@index(type)
-  @@index(account)
+  @@index([type])
+  @@index([account])
   @@index([id, account])
   @@map("user")
 }
@@ -34,7 +34,7 @@ model Tag {
   index       Int
   description String @default("")
 
-  @@index(type)
+  @@index([type])
   @@map("tag")
 }
 
@@ -47,20 +47,46 @@ model Msg {
   read       Boolean  @default(false)
   createTime DateTime @default(now()) @map("create_time")
 
-  @@map("message")
+  @@index([read, createTime])
+  @@map("msg")
 }
 
 model Post {
   id          Int      @id @default(autoincrement())
   title       String
-  type        String
+  type        Int
   icon        String
   description String?
+  footer      String?
   status      Int      @default(1)
   content     String   @db.Text
   updateTime  DateTime @updatedAt @map("update_time")
   createTime  DateTime @default(now()) @map("create_time")
 
-  @@index(type)
+  @@index([type])
   @@map("post")
+}
+
+model Log {
+  id          Int      @id @default(autoincrement())
+  type        Int
+  ip          String?
+  description String?
+  createTime  DateTime @default(now()) @map("create_time")
+
+  @@index([ip])
+  @@index([type, ip, createTime])
+  @@map("log")
+}
+
+model Resource {
+  id         Int      @id @default(autoincrement())
+  size       Int
+  name       String
+  path       String   @unique
+  type       Int      @default(-1)
+  createTime DateTime @default(now()) @map("create_time")
+
+  @@index([name])
+  @@map("resource")
 }

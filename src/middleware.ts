@@ -1,35 +1,36 @@
-import * as jose from "jose";
+import { jwtVerify } from "jose";
+import { insertLog } from "./app/api";
+import { getClientIP } from "@/lib/format";
 import { NextResponse } from "next/server";
 
-import { NextRequest } from "next/server";
+import { ENUM_COMMON } from "./enum/common";
+
+import type { NextRequest } from "next/server";
 
 export const config = {
-  matcher: [
-    "/console/:path*",
-    "/api/post/:path*",
-    "/api/basic/:path*",
-    "/api/message/:path*",
-    "/api/auth/password/:path*",
-  ],
+  matcher: ["/console/:path*", "/api/auth/:path*", "/lib/welcome"],
 };
 
 export async function middleware(request: NextRequest) {
-  const { url, method, cookies } = request;
-  const IS_CONSOLE = url.includes("/console");
+  const { cookies } = request;
+  const { pathname } = request.nextUrl;
+  if (pathname === "/lib/welcome") {
+    insertLog({
+      ip: getClientIP(request),
+      key: process.env.SECRET!,
+      type: ENUM_COMMON.LOG.ACCESS,
+    });
+    return;
+  }
   try {
-    if (method === "GET" && !url.includes("/api/message") && !IS_CONSOLE) {
-      return NextResponse.next();
-    }
-    await jose.jwtVerify(
+    await jwtVerify(
       cookies.get("Authorization")?.value!,
       new TextEncoder().encode(process.env.SECRET),
     );
   } catch (error) {
-    console.log('@-middleware-error',error);
-    return IS_CONSOLE
+    console.log("@-middleware-error", pathname, error);
+    return pathname.includes("/console")
       ? NextResponse.redirect(new URL("/", request.url), { status: 302 })
-      : NextResponse.json("Identity exception", {
-          status: 401,
-        });
+      : NextResponse.json("Identity exception", { status: 401 });
   }
 }

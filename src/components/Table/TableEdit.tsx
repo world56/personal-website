@@ -10,6 +10,7 @@ import DataTable from ".";
 import { useMemo } from "react";
 import { Button } from "../ui/button";
 import Tooltip from "@/components/Tooltip";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import Upload from "@/components/Upload/Image";
 import { useFieldArray } from "react-hook-form";
@@ -34,6 +35,9 @@ function onBlur(e: React.FocusEvent<HTMLInputElement>) {
 }
 
 const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
+  const t = useTranslations("tag");
+  const tCommon = useTranslations("common");
+
   const { fields, move, remove, append } = useFieldArray({
     name,
     control: form.control,
@@ -43,11 +47,27 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
     append({ icon: "", name: "", url: "", description: "" });
   }
 
+  function onClickEvent(e?: React.MouseEvent<HTMLButtonElement>) {
+    e?.preventDefault();
+  }
+
   const columns: ColumnDef<Omit<Tag, "id" | "type" | "index">>[] = useMemo(
     () => [
       {
         accessorKey: "icon",
-        header: "图标",
+        header: () => (
+          <Tooltip
+            onClick={onClickEvent}
+            title={
+              <>
+                <p>{t("iconRemark")}</p>
+                <p>{t("iconRemarkDesc")}</p>
+              </>
+            }
+          >
+            {t("icon")} <QuestionCircleOutlined className="ml-1" />
+          </Tooltip>
+        ),
         size: 30,
         cell: ({ row }) => (
           <FormField
@@ -66,7 +86,7 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
       },
       {
         accessorKey: "name",
-        header: "名称",
+        header: t("name"),
         size: 100,
         cell: ({ row }) => (
           <FormField
@@ -77,10 +97,10 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
                 <FormControl>
                   <Input
                     {...field}
+                    className="h-8"
                     onBlur={onBlur}
                     onFocus={onBlur}
-                    className="h-8"
-                    placeholder="请输入标签名称"
+                    placeholder={t("namePlaceholder")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -91,7 +111,7 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
       },
       {
         accessorKey: "description",
-        header: "描述",
+        header: t("desc"),
         size: 100,
         cell: ({ row }) => (
           <FormField
@@ -103,7 +123,7 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
                   <Input
                     {...field}
                     className="h-8"
-                    placeholder="请输入标签详情"
+                    placeholder={t("descPlaceholder")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -116,14 +136,15 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
         accessorKey: "url",
         header: () => (
           <Tooltip
+            onClick={onClickEvent}
             title={
               <>
-                <p> 配置外部链接后，点击元素可预览链接地址</p>
-                <p>（注：需填写协议类型，例：https://github.com）</p>
+                <p>{t("linkHint")}</p>
+                <p>{t("linkHintContent")}</p>
               </>
             }
           >
-            跳转链接 <QuestionCircleOutlined className="ml-1" />
+            {t("link")} <QuestionCircleOutlined className="ml-1" />
           </Tooltip>
         ),
         size: 100,
@@ -137,7 +158,7 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
                   <Input
                     {...field}
                     className="h-8"
-                    placeholder="请输入链接地址"
+                    placeholder={t("linkPlaceholder")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -148,8 +169,8 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
       },
       {
         accessorKey: "email",
-        header: "操作",
-        size: 50,
+        header: tCommon("operate"),
+        size: 55,
         cell: ({ row: { index } }) => (
           <div className="text-right">
             {index ? (
@@ -161,7 +182,7 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
                   move(index, index - 1);
                 }}
               >
-                上移
+                {t("top")}
               </Button>
             ) : null}
             {index + 1 === fields.length ? null : (
@@ -171,7 +192,7 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
                 className="p-0 mr-3"
                 onClick={() => move(index, index + 1)}
               >
-                下移
+                {t("bottom")}
               </Button>
             )}
             <Button
@@ -180,20 +201,20 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name, form }) => {
               onClick={() => remove(index)}
               className="p-0 mr-1 text-red-500"
             >
-              删除
+              {tCommon("delete")}
             </Button>
           </div>
         ),
       },
     ],
-    [name, form, fields, remove, move],
+    [name, form, fields, remove, move, t, tCommon],
   );
 
   return (
     <>
       <DataTable columns={columns} data={fields} />
       <Button type="button" variant="link" className="p-0" onClick={onInsert}>
-        <PlusCircleOutlined /> 新增
+        <PlusCircleOutlined /> {t("insert")}
       </Button>
     </>
   );

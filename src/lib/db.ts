@@ -7,18 +7,18 @@ import {
   createWriteStream,
 } from "fs";
 import { join } from "path";
+import { Cacheable } from "cacheable";
 import { PrismaClient } from "@prisma/client";
+import { checkLanguage } from "@/lib/language";
 
-declare global {
-  var prisma: PrismaClient;
-}
+import type { CacheableOptions } from "cacheable";
 
 /**
  * @name LocalStorage 本地存储
  */
 class LocalStorage {
-  private readonly FOLDER_PATH = join(process.cwd(), "./resource");
-  private readonly FILE_PATH = join(process.cwd(), "./resource/config.json");
+  readonly FOLDER_PATH = join(process.cwd(), "./resource");
+  readonly FILE_PATH = join(process.cwd(), "./resource/config.json");
 
   /**
    * @name set 新增、设置值
@@ -52,29 +52,58 @@ class LocalStorage {
   }
 
   /**
-   * @name clear 清空配置
-   * @description 走的是删除配置文件逻辑，获取值若无配置，会自动创建
+   * @name remove 删除文件
    */
-  clear() {
-    existsSync(this.FILE_PATH) &&
-      unlink(this.FILE_PATH, (err) => {
-        if (err) {
-          console.error("配置文件删除失败", err);
-        } else {
-          console.log("配置文件删除成功", this.FILE_PATH);
-        }
-      });
+  remove(name: string) {
+    const path = `${this.FOLDER_PATH}/${name}`;
+    if (existsSync(path)) {
+      return unlink(path, (err) => (err ? false : true));
+    }
+    return false;
+  }
+
+  /**
+   * @name language 获取系统语言
+   */
+  language() {
+    const language = this.get().language || process.env.LANG;
+    return checkLanguage(language) ? language : "zh-Hans";
+  }
+}
+
+class MemoryStorage extends Cacheable {
+  constructor(props?: CacheableOptions) {
+    super(props);
+  }
+
+  async incr(params: {
+    ttl: string;
+    maximum: number;
+    key: string | null | undefined;
+  }) {
+    const { key, maximum, ttl } = params;
+    const KEY = key ?? "unknown";
+    let int = (await this.get<number>(KEY)) ?? 0;
+    if (maximum && maximum === int) return false;
+    await this.set(KEY, ++int, ttl);
+    return await this.get(KEY);
+  }
+
+  async decr(key: string) {
+    let int = await this.get<number>(key);
+    if (typeof int === "number" && int) {
+      await this.set(key, --int);
+    }
   }
 }
 
 const prisma = global.prisma || new PrismaClient();
-const DBlocal = new LocalStorage();
-
 global.prisma = prisma;
 
-prisma.$disconnect();
-prisma.$connect().catch(() => {
-  console.log("prisma connection error");
-});
+const DBlocal = global.DBlocal || new LocalStorage();
+global.DBlocal = DBlocal;
 
-export { DBlocal, prisma };
+const cacheable = global.cacheable || new MemoryStorage();
+global.cacheable = cacheable;
+
+export { DBlocal, cacheable, prisma };

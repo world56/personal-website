@@ -3,7 +3,6 @@
 import {
   Form,
   FormItem,
-  FormLabel,
   FormField,
   FormControl,
   FormMessage,
@@ -13,12 +12,13 @@ import { z } from "zod";
 import { useState } from "react";
 import { useRequest } from "ahooks";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import LoadingButton from "@/components/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { existAdmin, signIn, register } from "@/app/api";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 const formSchema = z.object({
@@ -34,6 +34,9 @@ const formSchema = z.object({
 
 const SignIn = () => {
   const router = useRouter();
+  const params = useSearchParams();
+  const t = useTranslations("signin");
+
   const [loading, setLoading] = useState(false);
 
   const { data, loading: adminLoad } = useRequest(existAdmin);
@@ -50,7 +53,8 @@ const SignIn = () => {
       values.password = md5(values.password);
       !exist && (await register(values));
       await signIn(values);
-      router.push("/console");
+      const IS_KEEP_ALIVE = params?.get("K") === "1";
+      IS_KEEP_ALIVE ? window.close() : router.push("/console");
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -66,9 +70,7 @@ const SignIn = () => {
       <CardHeader className="pt-[25px] pb-[5px] select-none">
         <h1 className="text-4xl mt-3 font-bold text-center">Welcome</h1>
         <p className="!my-5 text-sm text-gray-400 text-center">
-          {data === false
-            ? "系统初始化，请注册您的帐号"
-            : "使用管理员账户密码进行登录"}
+          {data === false ? t("init") : t("login")}
         </p>
       </CardHeader>
       <CardContent>
@@ -80,7 +82,7 @@ const SignIn = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="账户" {...field} />
+                    <Input placeholder={t("account")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -93,7 +95,11 @@ const SignIn = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input {...field} type="password" placeholder="密码" />
+                    <Input
+                      {...field}
+                      type="password"
+                      placeholder={t("password")}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -106,7 +112,11 @@ const SignIn = () => {
                 className="w-full"
                 loading={loading || adminLoad}
               >
-                {loading || adminLoad ? "正在加载" : data ? "登陆" : "注册"}
+                {loading || adminLoad
+                  ? t("loading")
+                  : data
+                  ? t("signin")
+                  : t("register")}
               </LoadingButton>
 
               <Button
@@ -115,7 +125,7 @@ const SignIn = () => {
                 onClick={toMainPage}
                 className="w-full mt-5"
               >
-                返回首页
+                {t("back")}
               </Button>
             </div>
           </form>

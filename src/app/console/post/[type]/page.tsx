@@ -1,21 +1,22 @@
 "use client";
 
 import { toast } from "sonner";
-import { useState } from "react";
-import { usePosts } from "@/hooks";
 import Card from "@/components/Card";
 import Select from "@/components/Select";
 import { dateToTime } from "@/lib/format";
+import { useMemo, useState } from "react";
 import Confirm from "@/components/Confirm";
 import Tooltip from "@/components/Tooltip";
 import DataTable from "@/components/Table";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import LoadingButton from "@/components/Button";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import PageTurning from "@/components/PageTurning";
 import { SyncOutlined } from "@ant-design/icons";
+import { useClientLang, usePosts } from "@/hooks";
+import PageTurning from "@/components/PageTurning";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { deletePost, updatePostStatus } from "@/app/api";
 
@@ -24,25 +25,23 @@ import { ENUM_COMMON } from "@/enum/common";
 import type { Post } from "@prisma/client";
 import type { ColumnDef } from "@tanstack/react-table";
 
-const SELECT_ITEMS = [
-  { value: ENUM_COMMON.STATUS.ENABLE, label: "可预览" },
-  { value: ENUM_COMMON.STATUS.DISABLE, label: "不可预览" },
-];
-
 const Posts = () => {
   const router = useRouter();
+  const t = useTranslations("postTable");
+  const tCommon = useTranslations("common");
 
   const [deleteId, setDeleteId] = useState<Post["id"]>();
 
-  const { title, query, type, data, loading, run, setQuery } = usePosts();
+  const lang = useClientLang();
+  const { title, query, path, type, data, loading, run, setQuery } = usePosts();
 
   function onEdit(row?: Post) {
-    router.push(`/console/post/${type}/${row?.id || -1}`);
+    router.push(`/console/post/${path}/${row?.id || -1}`);
   }
 
   async function onStatus({ id }: Post, status: boolean) {
     await updatePostStatus({ id, status: Number(status) });
-    toast.success("保存成功");
+    toast.success(tCommon("saveSuccess"));
     run();
   }
 
@@ -59,13 +58,13 @@ const Posts = () => {
   }
 
   function onSkip(row: Post) {
-    window.open(`/${type}/${row.id}`);
+    window.open(`/${path}/${row.id}`);
   }
 
   async function onDelete(id?: Post["id"]) {
     if (id) {
       await deletePost({ id, type });
-      toast.success("删除成功");
+      toast.success(tCommon("deleteSuccess"));
       run();
     }
     setDeleteId(undefined);
@@ -75,10 +74,18 @@ const Posts = () => {
     setQuery((v) => ({ ...v, current }));
   }
 
+  const SELECT_ITEMS = useMemo(
+    () => [
+      { value: ENUM_COMMON.STATUS.ENABLE, label: t("statusTrue") },
+      { value: ENUM_COMMON.STATUS.DISABLE, label: t("statusFalse") },
+    ],
+    [t],
+  );
+
   const columns: ColumnDef<Post>[] = [
     {
       accessorKey: "title",
-      header: "标题",
+      header: t("title"),
       size: 265,
       cell: ({ row }) => (
         <Tooltip
@@ -91,7 +98,7 @@ const Posts = () => {
     },
     {
       accessorKey: "status",
-      header: "可预览",
+      header: t("status"),
       size: 60,
       cell: ({ row }) => (
         <Switch
@@ -103,7 +110,7 @@ const Posts = () => {
     },
     {
       accessorKey: "createTime",
-      header: "创建时间",
+      header: t("createTime"),
       size: 100,
       cell: ({ row }) => (
         <p className="text-center">{dateToTime(row.original.createTime)}</p>
@@ -111,63 +118,67 @@ const Posts = () => {
     },
     {
       accessorKey: "id",
-      header: "操作",
-      size: 80,
+      header: tCommon("operate"),
+      size: 100,
       cell: ({ row }) => {
         const { status } = row.original;
         return (
-          <>
+          <div className="flex justify-center">
             <Tooltip
               type="button"
               disabled={!status}
-              className="p-2 ml-[2px]"
               onClick={() => onSkip(row.original)}
-              title={status ? undefined : "开启'可预览'后预览"}
+              title={status ? undefined : tCommon("deleteDesc")}
+              className={`p-2 ${status ? "" : "dark:text-gray-500"}`}
             >
-              预览
+              {tCommon("preview")}
             </Tooltip>
 
             <Button
               variant="link"
-              className="p-2 ml-[2px]"
+              className="p-2"
               onClick={() => onEdit(row.original)}
             >
-              编辑
+              {tCommon("update")}
             </Button>
             <Button
               variant="link"
               className="p-2 text-red-500"
               onClick={() => onConfirmDelete(row.original)}
             >
-              删除
+              {tCommon("delete")}
             </Button>
-          </>
+          </div>
         );
       },
     },
   ];
 
   return (
-    <Card spacing={4} title={title} description={`向访问者展示您的${title}`}>
+    <Card
+      spacing={4}
+      title={title}
+      description={`${t("description")}${lang === "en" ? " " : ""}${title}`}
+    >
       <div className="flex justify-between">
         <div className="flex">
           <Select
             value={query.status}
             items={SELECT_ITEMS}
-            placeholder="预览状态"
+            placeholder={t("status")}
             onChange={onSelectStatus}
           />
           <Input
             className="w-60 mx-3"
             onChange={onTitleChange}
             defaultValue={query.title}
-            placeholder="输入标题进行查询"
+            placeholder={t("titlePlaceholder")}
           />
           <LoadingButton onClick={run} loading={loading} icon={SyncOutlined} />
         </div>
         <Button onClick={() => onEdit()}>
           <PlusCircleOutlined />
-          新增内容
+          {t("insert")}
         </Button>
       </div>
       <DataTable loading={loading} columns={columns} data={data?.list || []} />

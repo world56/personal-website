@@ -4,27 +4,30 @@ import {
   usePathname,
   useSearchParams,
 } from "next/navigation";
-import { getPosts } from "@/app/api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { getClientPosts, getPosts } from "@/app/api";
 import { useDebounceEffect, useRequest } from "ahooks";
+
+import { POST_TYPE } from "@/config/common";
 
 import { ENUM_COMMON } from "@/enum/common";
 
 import type { TypeCommon } from "@/interface/common";
 
-const TITLE = {
-  life: "个人生活",
-  notes: "学习笔记",
-  achievements: "学习成果",
-};
-
 /**
  * @name usePosts 帖子列表
  */
 export default function usePosts(status?: ENUM_COMMON.STATUS) {
-  const params = useParams<{ type: "achievements" | "notes" | "life" }>();
-  const type = params?.type!;
-  const title = TITLE[type];
+  const t = useTranslations("menu");
+
+  const params = useParams<{ type: keyof typeof POST_TYPE }>();
+
+  const type = POST_TYPE[params!.type];
+
+  const title = { life: t("life"), notes: t("notes"), projects: t("projects") }[
+    params!.type
+  ];
 
   const router = useRouter();
   const pathname = usePathname();
@@ -34,16 +37,16 @@ export default function usePosts(status?: ENUM_COMMON.STATUS) {
 
   const [query, setQuery] = useState<TypeCommon.QueryPosts>({
     type,
-    pageSize: IS_CONSOLE ? 25 : 9,
+    pageSize: IS_CONSOLE ? 15 : 9,
     current: Number(search?.get("current")) || 1,
     status: IS_CONSOLE ? getDefaultStatus() : status,
     title: IS_CONSOLE ? search?.get("title") || undefined : undefined,
   });
 
-  const hook = useRequest(() => getPosts(query), {
-    debounceWait: 150,
-    refreshDeps: [query],
-  });
+  const hook = useRequest(
+    () => (IS_CONSOLE ? getPosts(query) : getClientPosts(query)),
+    { debounceWait: 150, refreshDeps: [query] },
+  );
 
   function getDefaultStatus() {
     const status = search?.get("status");
@@ -71,17 +74,22 @@ export default function usePosts(status?: ENUM_COMMON.STATUS) {
     { wait: 500 },
   );
 
-  useEffect(() => {
-    const total = hook.data?.total;
-    const { current, pageSize } = query;
-    if (
-      typeof total !== "undefined" &&
-      pageSize * current > total &&
-      current !== 1
-    ) {
-      setQuery((v) => ({ ...v, current: 1 }));
-    }
-  }, [hook.data, query]);
+  const { current, pageSize } = query;
+
+  useDebounceEffect(
+    () => {
+      const total = hook.data?.total;
+      if (
+        total !== undefined &&
+        current > 1 &&
+        current > Math.ceil(total / pageSize)
+      ) {
+        setQuery((v) => ({ ...v, current: 1 }));
+      }
+    },
+    [hook.data, current, pageSize],
+    { wait: 300 },
+  );
 
   return {
     ...hook,
@@ -89,5 +97,6 @@ export default function usePosts(status?: ENUM_COMMON.STATUS) {
     title,
     query,
     setQuery,
+    path: params!.type,
   };
 }

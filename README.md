@@ -1,33 +1,74 @@
+<div align="center">
+
+[English](./README-en.md) · 中文
+
+</div>
+
 <p align="center">
   <a href="https://devtt.com">
     <img width="72" src="https://raw.githubusercontent.com/world56/static/main/website/icon.svg">
   </a>
 </p>
 
-<h1 align="center">Website</h1>
+<h1 align="center">Personal Website</h1>
 
-<p align="center">一款极简风格的个人主页</p>
+<p align="center">快速、简约风格的个人主页</p >
 
 ![Home](https://raw.githubusercontent.com/world56/static/main/website/1.png)
 
-## ✨ 主要技术栈
+## ✨ 技术栈
 
-- 🍔 **Next.JS**  <span style="font-size: 13px;color: gray;">(App Router)</span>
-- 🥯 **ISR**  <span style="font-size: 13px;color: gray;">(On-demand Revalidation)</span>
+- 🍔 **Next.JS** (App Router)
 - 🥪 **TypeScript**
-- 🧑‍🎨 **Tailwind CSS**  <span style="font-size: 13px;color: gray;">(shadcn/ui)</span>
-- 🍟 **Prisma**  <span style="font-size: 13px;color: gray;">(MySQL)</span>
-- 🐳 **Docker**
+- 🧑‍🎨 **Tailwind CSS** (shadcn/ui)
+- 🍟 **Prisma** (MySQL)
 
+## 💡 亮点
+
+- 📱 **适配移动端设备**  
+  响应式布局，支持低分辨率设备访问
+
+- 🌗 **支持浅色、深色主题**  
+  根据系统设置，自动调整白日、夜间皮肤
+
+- 📖 **多语言**  
+  支持简体中文、繁体中文、English
+
+- 🌏 **SEO**  
+  深度实践，支持各大搜索引擎[SEO](https://github.com/world56/static/tree/main/website#-seo%E6%95%88%E6%9E%9C%E9%A2%84%E8%A7%88)
+
+- 🥯 **增量渲染**  
+  采用 SSG、ISR 渲染，极大提升渲染效率
+
+- 📷 **资源压缩**  
+  对上传的图片资源进行压缩，提升加载速度，减少空间占用
+
+- 🧑‍🎨 **文本编辑**  
+  支持且不限于：上传、表格、音频、视频、iframe、多种编程语言代码示例
+
+- 🙋‍♂️ **后台管理**  
+  网站信息、个人信息编辑，内容管理、留言管理、静态资源管理等[相关功能](https://github.com/world56/static/tree/main/website#-%E6%95%88%E6%9E%9C%E5%9B%BE%E9%A2%84%E8%A7%88)
+
+- 🤩 **访客日志**  
+  访客日志功能，帮助您了解访客的访问频率。
+
+- 🐳 **Docker**  
+  支持 docker 多个镜像源，一键部署，降低心智负担
 
 ## 👮 环境变量 Environment
 
 ```bash
-# MYSQL地址，可自行指定数据库名，这里用的是website
-DATABASE_URL = mysql://root:xxx@@localhost:3306/website
+# MYSQL地址
+DATABASE_URL = mysql://root:pwd@localhost:3306/website
 
-# JWT 密钥
-SECRET = xxx
+# 系统密钥（必填）
+SECRET = your_key
+
+# 系统语言（默认zh-Hans）
+# zh-Hans 简体中文
+# zh-Hant 繁體中文
+# en      English
+LANG = zh-Hans
 ```
 
 ## 👷 本地开发 Development
@@ -44,34 +85,33 @@ $ npm run dev
 
 ## 🧑‍💼 生产部署 Production
 
-
 ### 🐳 Docker
-
-<p><b>拉取镜像：</b>可将<b>world56/website</b>替换为阿里云源<b> registry.cn-hangzhou.aliyuncs.com/world56/website </b></p>
-<p><b>静态资源：</b>静态资源托管在/app/resource目录，建议绑定数据卷（-v），防止意外丢失。</p>
 
 #### 1.拉取镜像
 
 ```bash
+# 官方源
 $ docker pull world56/website
+# 阿里云源
+$ docker pull registry.cn-hangzhou.aliyuncs.com/world56/website
 ```
 
 #### 2.启动容器
 
 ```bash
-$ docker run -d -p 3000:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e SECRET=text -v ~/app/website/resource:/app/resource world56/website
+# 静态资源托管在/app/resource目录，请绑定数据卷（-v），防止资源丢失。
+$ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e SECRET=your_key -e LANG=zh-Hans -v ~/app/website/resource:/app/resource world56/website
 ```
 
+---
 
 ### 🕷️PM2
 
-<p><a href='https://github.com/Unitech/pm2'>PM2</a>是NodeJS应用生产环境进程管理器，可在生产环境中管理并维持Node应用运行。</p>
+<p><a href='https://github.com/Unitech/pm2'>PM2</a >是NodeJS应用生产环境进程管理器，可在生产环境中管理并维持Node应用运行。</p >
 
-<p><b>环境准备</b>：默认宿主机<b>NodeJS版本号v20.9.0</b>，且已全局安装 <a href='https://github.com/Unitech/pm2'><b>PM2</b></a>。</p>
+<p><b>构建准备</b>：NodeJS版本号<b>v20.9.0</b>，配置<b>.env</b>相关变量，全局安装 <a href='https://github.com/Unitech/pm2'><b>PM2</b></a >。</p >
 
-<p><b>环境变量</b>：根目录<b>.env</b>文件是环境变量配置文件，编译前应提前正确配置。</p>
-
-<p><b>静态资源</b>：应用<b>构建</b>时会创建<b>resource目录</b>，负责<b>托管静态资源</b>，手动部署请注意resource目录不要被删除、覆盖等情况，防止资源丢失。</p>
+<p><b>警告‼️</b>：resource 目录用于托管静态资源，<b>构建时，会先删除之前的build目录，在生成新的build目录，这会导致build目录下的resource目录重新生成</b>。若您要坚持自己手动部署，可先在本地构建，然后在上传服务器部署。</p >
 
 ```bash
 # 1.生成 Prisma Client（仅需执行一次）
@@ -80,11 +120,11 @@ $ npx prisma generate
 # 2.创建、关联数据库表（仅需执行一次）
 $ npx prisma db push
 
-# 3.编译构建 (https://nextjs.org/docs/app/api-reference/next-config-js/output)
-$ npm run build:pm2
+# 3.编译构建
+$ npm run build
 
-# 4.打开standalone文件夹（编译后的输出文件）
-$ cd standalone
+# 4.打开build文件夹（编译后的输出文件）
+$ cd build
 
 # 5.通过pm2启动并托管
 $ pm2 start pm2.json
@@ -93,29 +133,44 @@ $ pm2 start pm2.json
 $ pm2 ls
 ```
 
+---
+
+### 🙋‍♂️ 关于 Nginx
+
+<p>若使用 Nginx 进行代理，请<b>务必添加下列参数</b>。</p >
+
+```bash
+
+server {
+ ...
+ location / {
+  proxy_set_header X-Real-IP $remote_addr; # “访问日志”功能
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; # “访问日志”功能
+  proxy_pass http://127.0.0.1:8001;  # website服务端口
+ }
+
+ location /api/auth/upload {
+  client_max_body_size 32M; # “上传资源”功能
+  proxy_pass http://127.0.0.1:8001; # website服务端口
+ }
+}
+
+```
+
+## 🚀 迁移升级
+仍在使用1.3.0以下版本号的用户，若升级至1.3.0及以上版本，需要手动执行[SQL文件](https://github.com/world56/personal-website/blob/main/upgrade/post_type.sql)。此次升级修改了post表type字段类型，为未来应用可扩展做好准备。
+
 
 ## 🔍 访问地址（例）
-<p>普通访客：<a href="http://127.0.0.1:3000">http://127.0.0.1:3000</a></p>
-<p>后台管理：<a href="http://127.0.0.1:3000/signin">http://127.0.0.1:3000/signin</a>  (首次使用需要注册) </p>
 
+<p>普通访客：<a href="http://127.0.0.1:3000">http://127.0.0.1:3000</a ></p >
+<p>后台管理：<a href="http://127.0.0.1:3000/signin">http://127.0.0.1:3000/signin</a >  (首次使用需要注册管理员) </p >
+
+## 📷 效果图预览
+
+[更多细节图，点击查看](https://github.com/world56/static/tree/main/website#-%E6%95%88%E6%9E%9C%E5%9B%BE%E9%A2%84%E8%A7%88)
 
 ## 🙏 特别鸣谢 Special Thanks
 
 本项目 UI 灵感来源于[@codewithsadee](https://github.com/codewithsadee)，和他优秀的开源项目 [vcard-personal-portfolio](https://github.com/codewithsadee/vcard-personal-portfolio)，感谢他的付出与开源精神。  
 The UI inspiration for this project come from [@codewithsadee](https://github.com/codewithsadee) and his outstanding open-source project [vcard-personal-portfolio](https://github.com/codewithsadee/vcard-personal-portfolio). Grateful for his dedication and open-source spirit.
-
-## 📷 效果图预览
-
-<img width="1000" style="border-radius:20px"  src="https://raw.githubusercontent.com/world56/static/main/website/1.png" alt="个人主页">
-
-<img width="1000" style="border-radius:20px"  src="https://raw.githubusercontent.com/world56/static/main/website/2.png" alt="个人主页">
-
-<img width="1000" style="border-radius:20px"  src="https://raw.githubusercontent.com/world56/static/main/website/0.png" alt="个人主页">
-
-<img width="1000" style="border-radius:20px"  src="https://raw.githubusercontent.com/world56/static/main/website/3.png" alt="个人主页">
-
-<img width="1000" style="border-radius:20px"  src="https://raw.githubusercontent.com/world56/static/main/website/4.png" alt="个人主页">
-
-<img width="1000" style="border-radius:20px"  src="https://raw.githubusercontent.com/world56/static/main/website/5.png" alt="个人主页">
-
-<img width="1000" style="border-radius:20px"  src="https://raw.githubusercontent.com/world56/static/main/website/6.png" alt="个人主页">

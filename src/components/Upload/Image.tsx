@@ -1,10 +1,11 @@
 import Image from "next/image";
-import { uploadFiles } from "@/app/api";
+import { uploadFile } from "@/app/api";
+import { useTranslations } from "next-intl";
 import { useState, forwardRef } from "react";
 import { getUploadFiles } from "@/lib/filter";
 import { CameraFilled, LoadingOutlined } from "@ant-design/icons";
 
-import { BASE_URL } from "@/lib/request";
+import { API_RESOURCE } from "@/app/api";
 
 import type { ForwardRefRenderFunction } from "react";
 
@@ -32,18 +33,22 @@ const UploadImage: TypeUploadImageRefProps = (
   { size = "middle", radius = true, className = "", value, onChange },
   ref,
 ) => {
+  const t = useTranslations("common");
+
+  const toWhite = size === "small" ? "dark:dark-icon" : "";
+
   const [load, setLoad] = useState(false);
   const [val, setVal] = useState<string>();
 
   async function onStart() {
     try {
-      const chunk = await getUploadFiles({
+      const [file] = await getUploadFiles({
         size: 3145728,
         accept: ".svg, .jpg, .jpeg, .png, .ico, .webp",
       });
       setLoad(true);
-      const [res] = await uploadFiles(chunk);
-      updateValue(res?.url);
+      const { path } = await uploadFile(file);
+      updateValue(path);
       setLoad(false);
     } catch (error) {
       setLoad(false);
@@ -72,6 +77,7 @@ const UploadImage: TypeUploadImageRefProps = (
          relative flex justify-center items-center flex-col ${STYLE.IMG} 
          cursor-pointer border border-dashed overflow-hidden select-none ${className}
         border-gray-400 text-gray-600 hover:border-black hover:text-black ${borderRadius}
+        dark:text-white dark:hover:border-white
       `}
     >
       {RESOURCE_URL ? (
@@ -81,13 +87,13 @@ const UploadImage: TypeUploadImageRefProps = (
             priority
             width={STYLE.SIZE}
             height={STYLE.SIZE}
-            src={`${BASE_URL}${RESOURCE_URL}`}
-            className={`w-full h-auto object-cover ${borderRadius}`}
+            src={`${API_RESOURCE}${RESOURCE_URL}`}
+            className={`w-full h-full object-cover ${toWhite} ${borderRadius}`}
           />
           {load ? (
-            <LoadingOutlined className="text-sm text-black absolute" />
+            <LoadingOutlined className="text-sm absolute text-black dark:text-white" />
           ) : (
-            <CameraFilled className="text-sm text-black absolute" />
+            <CameraFilled className="text-sm absolute text-black dark:text-white" />
           )}
         </>
       ) : (
@@ -95,7 +101,7 @@ const UploadImage: TypeUploadImageRefProps = (
           {load ? <LoadingOutlined /> : <CameraFilled />}
           {STYLE?.NAME ? (
             <span className={`mt-1 ${STYLE.NAME}`}>
-              {load ? "正在上传" : "点击上传"}
+              {load ? t("upLoading") : t("lickUpload")}
             </span>
           ) : null}
         </>

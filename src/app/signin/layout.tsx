@@ -27,7 +27,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <Script src="/lib/tinymce/plugins/visualblocks/plugin.min.js" />
     <Script src="/lib/tinymce/plugins/searchreplace/plugin.min.js" />
     <Script src="/lib/tinymce/plugins/insertdatetime/plugin.min.js" />
-    <Script src="/lib/tinymce/langs/zh_CN.js" />
   </>
 );
 

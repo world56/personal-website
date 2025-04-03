@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useRequest } from "ahooks";
 import Card from "@/components/Card";
 import { useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import Upload from "@/components/Upload/Image";
 import LoadingButton from "@/components/Button";
@@ -25,31 +26,42 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import { getPost, insertPost, updatePost } from "@/app/api";
 
+import { POST_TYPE } from "@/config/common";
+
 import type { TypeCommon } from "@/interface/common";
 
-const formSchema = z.object({
-  id: z.number().optional(),
-  icon: z.string().min(1, { message: "封面图不能为空" }),
-  content: z.string().min(1, { message: "文本内容不能为空" }),
-  title: z.string().min(2, { message: "姓名至少2位字符，且不得为空" }),
-  description: z.string().max(100, { message: "摘要最多支持100个字符" }),
-});
-
 const Edit = () => {
+  const t = useTranslations("postEdit");
+  const tCommon = useTranslations("common");
+
+  const formSchema = z.object({
+    id: z.number().optional(),
+    icon: z.string().min(1, { message: t("formIcon") }),
+    content: z.string().min(1, { message: t("formContent") }),
+    title: z.string().min(2, { message: t("formTitle") }),
+    footer: z.string().max(30, { message: t("formFooter") }),
+    description: z.string().max(100, { message: t("formDescription") }),
+  });
+
   const [submitLoad, setSubmitLoad] = useState(false);
 
   const router = useRouter();
 
   const params = useParams<Record<"id" | "type", string>>();
   const id = Number(params?.id!);
-  const type = params?.type!;
+  const type = params?.type! as keyof typeof POST_TYPE;
 
   const IS_ADD = id === -1;
 
   const form = useForm<TypeCommon.UpdatePost>({
     mode: "onSubmit",
     resolver: zodResolver(formSchema),
-    defaultValues: { title: "", icon: "", description: "" },
+    defaultValues: {
+      icon: "",
+      title: "",
+      description: "",
+      footer: t("footerDefaultContent"),
+    },
   });
 
   const { loading } = useRequest(
@@ -70,11 +82,11 @@ const Edit = () => {
   async function onSubmit(values: TypeCommon.UpdatePost) {
     try {
       setSubmitLoad(true);
-      values.type = type;
+      values.type = POST_TYPE[type];
       if (IS_ADD) await insertPost(values);
       else await updatePost(values);
       setSubmitLoad(false);
-      toast.success("保存成功");
+      toast.success(tCommon("saveSuccess"));
       onBack();
     } catch (error) {
       setSubmitLoad(false);
@@ -88,13 +100,13 @@ const Edit = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Card title={`${IS_ADD ? "新增" : "编辑"}内容`} onBack={onBack}>
+        <Card onBack={onBack} title={`${IS_ADD ? t("insert") : t("update")}`}>
           <FormField
             name="icon"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>内容封面</FormLabel>
+                <FormLabel>{t("cover")}</FormLabel>
                 <FormControl>
                   <Upload radius={false} {...field} size="large" />
                 </FormControl>
@@ -108,9 +120,9 @@ const Edit = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>内容标题</FormLabel>
+                <FormLabel>{t("title")}</FormLabel>
                 <FormControl>
-                  <Input placeholder="请输入内容标题" {...field} />
+                  <Input placeholder={t("titlePlaceholder")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -122,14 +134,12 @@ const Edit = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>文本摘要</FormLabel>
+                <FormLabel>{t("abstract")}</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="请输入内容摘要" {...field} />
+                  <Textarea placeholder={t("abstractPlaceholder")} {...field} />
                 </FormControl>
                 <FormMessage />
-                <FormDescription>
-                  搜索引擎会读取该信息，并将其用作搜索结果中的摘要
-                </FormDescription>
+                <FormDescription>{t("abstractDesc")}</FormDescription>
               </FormItem>
             )}
           />
@@ -139,7 +149,7 @@ const Edit = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>文本内容</FormLabel>
+                <FormLabel>{t("textContent")}</FormLabel>
                 <FormControl>
                   <TxtEditor {...field} />
                 </FormControl>
@@ -147,18 +157,33 @@ const Edit = () => {
               </FormItem>
             )}
           />
+
+          <FormField
+            name="footer"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("footer")}</FormLabel>
+                <FormControl>
+                  <Input placeholder={t("footerPlaceholder")} {...field} />
+                </FormControl>
+                <FormMessage />
+                <FormDescription>{t("footerDesc")}</FormDescription>
+              </FormItem>
+            )}
+          />
         </Card>
         <div className="text-center">
           <LoadingButton loading={loading || submitLoad} type="submit">
-            保存内容
+            {tCommon("submit")}
           </LoadingButton>
           <Button
             type="button"
             onClick={onBack}
             variant="outline"
-            className="ml-5 my-5"
+            className="ml-5 my-5 dark:bg-black"
           >
-            返回上页
+            {tCommon("back")}
           </Button>
         </div>
       </form>

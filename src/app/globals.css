@@ -1,12 +1,15 @@
-@import "~prismjs/themes/prism-tomorrow.min.css";
+@import "../../public/lib/player/index.css";
+@import "../../public/lib/tinymce/mount/code.css";
+@import "../../public/lib/tinymce/mount/index.css";
 @import "../../public/lib/tinymce/skins/content/default/content.min.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 240 7% 96%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -31,11 +34,20 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+
+    ::-webkit-scrollbar-thumb {
+      background: #c3c3c3;
+    }
+
+    .nav-select {
+      color: white;
+      background: black;
+    }
   }
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 210 6% 17%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 222 10% 11%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
@@ -49,33 +61,26 @@
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 0 0% 18.8%;
+    --input: 210 10% 26%;
     --ring: 240 4.9% 83.9%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-  }
-  .no-tailwindcss-base,
-  .no-tailwindcss-base *,
-  .no-tailwindcss-base > * {
-    font-size: revert;
-    font-weight: revert;
-    margin: revert;
-    display: revert;
-    vertical-align: revert;
-    max-width: revert;
-    height: revert;
-    border-width: revert;
-    border-style: revert;
-    border-color: revert;
-    outline: revert;
-    list-style: revert;
-    padding: revert;
+
+    ::-webkit-scrollbar-thumb {
+      background: #727375 !important;
+    }
+
+    .nav-select {
+      color: black;
+      background: white;
+    }
   }
 }
+
 @layer base {
   * {
     @apply border-border;
@@ -85,10 +90,40 @@
   }
 }
 
-html,
-body {
-  margin: 0;
-  background: #f6f6f6;
+@media (max-width: 768px) {
+  .about-me > :first-child {
+    margin-top: 0 !important;
+  }
+
+  .text-content img {
+    transition: none !important;
+  }
+
+  .text-content:hover img {
+    transform: scale(1) !important;
+  }
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+body::-webkit-scrollbar {
+  height: 14px;
+  width: 14px;
+}
+
+body::-webkit-scrollbar-thumb {
+  border: 3px solid hsl(var(--background));
+}
+
+body::-webkit-scrollbar-track {
+  background: hsl(var(--background));
 }
 
 a {
@@ -96,16 +131,10 @@ a {
   text-decoration: none;
 }
 
-.tox-promotion,
-.tox-statusbar__branding,
-.tox-edit-area::before {
-  display: none !important;
+.text-content img {
+  transition: transform 0.5s ease;
 }
 
-.tox-tinymce {
-  border: 1px solid #f1f1f3 !important;
-}
-
-.mce-content-body pre {
-  border-radius: 5px;
+.text-content:hover img {
+  transform: scale(1.1);
 }

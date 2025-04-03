@@ -28,14 +28,21 @@ export namespace ENUM_COMMON {
   }
 
   /**
-   * @name UPLOAD_FILE_TYPE 上传文件的类型
-   * @description 文本编辑器
+   * @name RESOURCE 资源类型
    */
-  export enum UPLOAD_FILE_TYPE {
+  export enum RESOURCE {
     /**
-     * @param IMAGE 图片
+     * @param UNKNOWN 未知
+     */
+    UNKNOWN = -1,
+    /**
+     * @param IMAGE 图像
      */
     IMAGE,
+    /**
+     * @param VIDEO 音频
+     */
+    AUDIO,
     /**
      * @param VIDEO 视频
      */
@@ -55,5 +62,57 @@ export namespace ENUM_COMMON {
      * @param OTHER 其他类型 未知 🤷‍♂️
      */
     OTHER,
+  }
+
+  /**
+   * @name POST_TYPE 文本类型
+   */
+  export enum POST_TYPE {
+    /**
+     * @param LIFE 生活
+     */
+    LIFE,
+    /**
+     * @param NOTES 笔记
+     */
+    NOTE,
+    /**
+     * @param project 项目、成果
+     */
+    PROJECT,
+  }
+
+  /**
+   * @name LOG 日志类型
+   */
+  export enum LOG {
+    /**
+     * @param LOGIN 管理员登陆
+     */
+    LOGIN,
+    /**
+     * @param ACCESS 访客访问
+     */
+    ACCESS,
+    /**
+     * @param PASSWORD 修改密码
+     */
+    PASSWORD,
+  }
+
+  export enum LANG {
+    /**
+     * @param EN 英语
+     * @description 美式
+     */
+    EN = "en",
+    /**
+     * @param ZH_HANS 简体中文
+     */
+    ZH_HANS = "zh-Hans",
+    /**
+     * @param ZH_HANT 繁体中文
+     */
+    ZH_HANT = "zh-Hant",
   }
 }
