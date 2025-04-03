@@ -148,7 +148,10 @@ server {
 
 ## 🚀 Migration & Upgrades
 
-For users still on versions 1.0 or 1.2, upgrading to 1.3.0+ requires manually executing this [SQL file](https://github.com/world56/personal-website/blob/main/upgrade/post_type.sql). This update modifies the `type` field in the `post` table to support future feature expansion.
+Users still using versions below 1.3.0 need to manually execute the  
+[SQL file](https://github.com/world56/personal-website/blob/main/upgrade/post_type.sql)  
+when upgrading to version 1.3.0 or later.  This upgrade modifies the `type` field in the `post` table to improve future application scalability.
+
 
 ## 🔍 Access URLs (Example)
 
