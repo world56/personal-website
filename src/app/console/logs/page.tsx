@@ -1,10 +1,10 @@
 "use client";
 
+import { set } from "date-fns";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useRequest } from "ahooks";
 import Card from "@/components/Card";
-import { set, format } from "date-fns";
 import Select from "@/components/Select";
 import Visits from "@/components/Visits";
 import { dateToTime } from "@/lib/format";
@@ -71,12 +71,11 @@ const Logs = () => {
     const endTime = to
       ? set(to, { hours: 23, minutes: 59, seconds: 59 })
       : undefined;
-    const startTime = from ? format(from, "yyyy-MM-dd HH:mm:ss") : undefined;
     setQuery((s) => ({
       ...s,
-      startTime,
       current: 1,
-      endTime: endTime ? format(endTime, "yyyy-MM-dd HH:mm:ss") : undefined,
+      startTime: from?.toISOString(),
+      endTime: endTime?.toISOString(),
     }));
   }
 
