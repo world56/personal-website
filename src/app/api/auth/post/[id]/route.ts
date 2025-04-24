@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { _pageRevalidate } from "@/app/api";
 
+import { POST_PATH } from "@/config/common";
+
 import type { Post } from "@prisma/client";
 import type { NextRequest } from "next/server";
 
@@ -10,7 +12,7 @@ interface TypeParams {
 }
 
 async function clearCache(type: Post["type"], id: Post["id"]) {
-  const path = `/main/post/${type}/${id}`;
+  const path = `/main/post/${POST_PATH[type as keyof typeof POST_PATH]}/${id}`;
   return await _pageRevalidate({ path, key: process.env.SECRET! });
 }
 
