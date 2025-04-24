@@ -11,3 +11,5 @@ export const POST_PATH = {
   [ENUM_COMMON.POST_TYPE.NOTE]: "notes",
   [ENUM_COMMON.POST_TYPE.PROJECT]: "projects",
 };
+
+export const KEY_TIME_ZONE = `time-zone`;

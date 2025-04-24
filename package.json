@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "devDependencies": {
+    "@types/luxon": "^3.6.2",
     "@types/md5": "^2.3.5",
     "@types/mime": "^4.0.0",
     "@types/node": "20.11.5",
@@ -48,6 +49,7 @@
     "filesize": "^10.1.6",
     "jose": "^5.9.6",
     "lucide-react": "^0.452.0",
+    "luxon": "^3.6.1",
     "md5": "^2.3.0",
     "media-chrome": "^4.3.0",
     "mime": "^4.0.4",
