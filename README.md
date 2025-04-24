@@ -158,7 +158,7 @@ server {
 ```
 
 ## 🚀 迁移升级
-仍在使用1.3.0以下版本号的用户，若升级至1.3.0及以上版本，需要手动执行[SQL文件](https://github.com/world56/personal-website/blob/main/upgrade/post_type.sql)。此次升级修改了post表type字段类型，为未来应用可扩展做好准备。
+仍在使用1.3.0以下版本号的用户，若升级至1.3.0及以上版本，需要手动执行[SQL文件](./upgrade/post_type.sql)。此次升级修改了post表type字段类型，为未来应用可扩展做好准备。
 
 
 ## 🔍 访问地址（例）

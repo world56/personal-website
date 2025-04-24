@@ -1,52 +1,57 @@
-import { isVoid } from "@/lib/utils";
+import { DateTime } from "luxon";
+import { getUTCTime } from "@/lib/format";
 import { NextResponse } from "next/server";
 import { prisma, cacheable } from "@/lib/db";
-import { format, getMonth, startOfMonth, endOfDay, startOfDay } from "date-fns";
 
 import { ENUM_COMMON } from "@/enum/common";
 
+import { KEY_TIME_ZONE } from "@/config/common";
+
 import type { NextRequest } from "next/server";
 
-export async function GET() {
-  const date = new Date();
-  const dateDay = date.getDate();
-  const dateMonth = getMonth(date);
-  let [count, today, month] = await Promise.all([
-    cacheable.get(`visit_count`),
-    cacheable.get(`visit_${dateDay}`),
-    cacheable.get(`visit_${dateMonth}`),
+export async function GET(request: NextRequest) {
+  const TIME_ZONE = request.headers.get("time-zone")!;
+  if (!TIME_ZONE) {
+    return NextResponse.json("missing required parameter", { status: 400 });
+  }
+  const { date, KEY_COUNT, KEY_TODAY, KEY_MONTH } = getUTCTime(TIME_ZONE);
+  let [count, today, month, TIME_ZONE_VALUE] = await Promise.all([
+    cacheable.get(KEY_COUNT),
+    cacheable.get(KEY_TODAY),
+    cacheable.get(KEY_MONTH),
+    cacheable.get(KEY_TIME_ZONE),
   ]);
-  if (isVoid(count)) {
-    const startDay = new Date(format(endOfDay(date), "yyyy-MM-dd'T'HH:mm:ss"));
+  if (TIME_ZONE && TIME_ZONE !== TIME_ZONE_VALUE) {
+    const startOfToday = date.startOf("day").toUTC().toJSDate();
+    const endOfToday = date.endOf("day").toUTC().toJSDate();
+    const startOfMonth = date.startOf("month").toUTC().toJSDate()!;
     [count, today, month] = await Promise.all([
       prisma.log.count({ where: { type: ENUM_COMMON.LOG.ACCESS } }),
       prisma.log.count({
         where: {
           type: ENUM_COMMON.LOG.ACCESS,
-          createTime: {
-            lte: startDay,
-            gte: new Date(format(startOfDay(date), "yyyy-MM-dd'T'HH:mm:ss")),
-          },
+          createTime: { gte: startOfToday, lte: endOfToday },
         },
       }),
       prisma.log.count({
         where: {
           type: ENUM_COMMON.LOG.ACCESS,
-          createTime: {
-            lte: startDay,
-            gte: new Date(format(startOfMonth(date), "yyyy-MM-dd'T'HH:mm:ss")),
-          },
+          createTime: { gte: startOfMonth, lte: endOfToday },
         },
       }),
     ]);
-    cacheable.set(`visit_count`, count);
-    cacheable.set(`visit_${dateDay}`, today, "24m");
-    cacheable.set(`visit_${dateMonth}`, month, "32d");
+    cacheable.set(KEY_COUNT, count);
+    cacheable.set(KEY_TODAY, today, "24m");
+    cacheable.set(KEY_MONTH, month, "32d");
   }
   return NextResponse.json({ today, month, count });
 }
 
 export async function DELETE(request: NextRequest) {
+  const TIME_ZONE = request.headers.get("time-zone")!;
+  if (!TIME_ZONE) {
+    return NextResponse.json("missing required parameter", { status: 400 });
+  }
   const { searchParams } = request.nextUrl;
   const id = Number(searchParams.get("id"));
   const res = await prisma.log.findUnique({
@@ -56,11 +61,13 @@ export async function DELETE(request: NextRequest) {
   if (res?.type !== ENUM_COMMON.LOG.ACCESS) {
     return NextResponse.json("Not deletable", { status: 400 });
   }
-  const date = new Date(res.createTime);
+  const date = DateTime.fromISO(res.createTime.toISOString()).setZone(
+    TIME_ZONE,
+  );
   await Promise.all([
     cacheable.decr("visit_count"),
-    cacheable.decr(`visit_${date.getDate()}`),
-    cacheable.decr(`visit_${getMonth(date)}`),
+    cacheable.decr(`visit_${date.day}`),
+    cacheable.decr(`visit_${date.month}`),
   ]);
   await prisma.log.delete({ where: { id } });
   return NextResponse.json(true);

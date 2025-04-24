@@ -226,6 +226,9 @@ export function getLogs(
 export function getVisitCount() {
   return request<Record<"today" | "month" | "count", number>>(`/api/auth/log`, {
     method: "GET",
+    headers: {
+      "time-zone": Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
   });
 }
 
@@ -236,6 +239,9 @@ export function deleteLog(params: Pick<Log, "id">) {
   return request<boolean>(`/api/auth/log`, {
     method: "DELETE",
     params,
+    headers: {
+      "time-zone": Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
   });
 }
 

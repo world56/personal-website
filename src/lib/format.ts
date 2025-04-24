@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 import type { NextRequest } from "next/server";
 
 /**
@@ -7,8 +9,8 @@ import type { NextRequest } from "next/server";
 export function dateToTime(isoDateString?: string | Date) {
   if (!isoDateString) return "-";
   const date = new Date(isoDateString);
-  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; 
-  const userLocale = navigator.language || "zh-CN"; 
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const userLocale = navigator.language || "zh-CN";
   return date.toLocaleString(userLocale, {
     year: "numeric",
     month: "2-digit",
@@ -20,6 +22,19 @@ export function dateToTime(isoDateString?: string | Date) {
   });
 }
 
+
+/**
+ * @name getUTCTime 根据UTC获取时间
+ */
+export function getUTCTime(timeZone: string) {
+  const date = DateTime.now().setZone(timeZone);
+  return {
+    date,
+    KEY_COUNT: `visit_count`,
+    KEY_TODAY: `visit_${date.day}`,
+    KEY_MONTH: `visit_${date.month}`,
+  };
+}
 
 /**
   @name getClientIP 获取客户端IP
