@@ -1,3 +1,9 @@
+<div align="center">
+
+English · [中文](./README.md)
+
+</div>
+
 <p align="center">
   <a href="https://devtt.com">
     <img width="72" src="https://raw.githubusercontent.com/world56/static/main/website/icon.svg">
@@ -148,8 +154,7 @@ server {
 
 ## 🚀 Migration & Upgrades
 
-Users still using versions below 1.3.0 need to manually execute the  
-[SQL file](https://github.com/world56/personal-website/blob/main/upgrade/post_type.sql)  
+Users still using versions below 1.3.0 need to manually execute the [SQL file](./upgrade/post_type.sql)  
 when upgrading to version 1.3.0 or later.  This upgrade modifies the `type` field in the `post` table to improve future application scalability.
 
 
