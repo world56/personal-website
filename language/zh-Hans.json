@@ -115,7 +115,7 @@
     "title": "内容标题",
     "titlePlaceholder": "请输入內容标题",
     "abstract": "内容摘要",
-    "abstractPlaceholder": "請輸入內容摘要",
+    "abstractPlaceholder": "请输入內容摘要",
     "abstractDesc": "搜索引擎会读取该信息，并将其用作搜索结果中的摘要",
     "textContent": "文本内容",
     "footer": "页脚信息",
