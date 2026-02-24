@@ -1,6 +1,6 @@
-import About from "./component/About";
-import Language from "./component/Language";
-import Password from "./component/Password";
+import About from "./_components/About";
+import Language from "./_components/Language";
+import Password from "./_components/Password";
 
 const System = () => (
   <>

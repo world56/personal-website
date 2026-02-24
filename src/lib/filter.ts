@@ -3,6 +3,7 @@ import { filesize } from "filesize";
 import getClientI18n from "@/lib/language";
 
 import { ENUM_COMMON } from "@/enum/common";
+import { UPLOAD_MAX_SIZE } from "@/config/common";
 
 import type { TypeCommon } from "@/interface/common";
 
@@ -63,29 +64,13 @@ export function getFileType(fileName: string) {
  * @param file 文件对象
  * @param type 校验文件类型
  */
-function verifyFile(file: File, size?: number) {
-  let MAX_SIZE = size || 0;
-  if (size === undefined) {
-    switch (getFileType(file.name)) {
-      case ENUM_COMMON.RESOURCE.IMAGE:
-        MAX_SIZE = 10485760;
-        break;
-      case ENUM_COMMON.RESOURCE.VIDEO:
-        MAX_SIZE = 31457280;
-        break;
-      case ENUM_COMMON.RESOURCE.AUDIO:
-        MAX_SIZE = 15728640;
-        break;
-      default:
-        break;
-    }
-  }
-  if (file.size > MAX_SIZE) {
+function verifyFile(file: File) {
+  if (file.size > UPLOAD_MAX_SIZE) {
     getClientI18n().then((t) => {
       toast.error(t("hint.fileLimit"), {
         description: t("hint.fileTooLarge", {
           fileName: file.name,
-          maxSize: filesize(MAX_SIZE),
+          maxSize: filesize(UPLOAD_MAX_SIZE, { base: 2 }),
         }),
       });
     });
@@ -99,12 +84,17 @@ function verifyFile(file: File, size?: number) {
  * @name getUploadFiles 客户端创建一个上传任务
  * @description 用户拿到选择对应的文件列表，支持校验
  */
-export function getUploadFiles(params: {
-  size?: number;
-  accept: string;
-  multiple?: boolean;
-}) {
-  const { accept, multiple, size } = params;
+export function getUploadFiles(
+  /**
+   * @param accept 文件格式
+   * @description .svg, .jpg, .jpeg, .png, .ico, .webp
+   */
+  accept: string,
+  /**
+   * @param multiple 是否上传多个
+   */
+  multiple?: boolean,
+) {
   return new Promise<FormData[]>((resolve, reject) => {
     const btn = document.createElement("input");
     btn.setAttribute("type", "file");
@@ -116,7 +106,7 @@ export function getUploadFiles(params: {
         const { files } = e.target as HTMLInputElement;
         const chunks: FormData[] = [];
         Array.prototype.forEach.call(files, async (file: File) => {
-          if (verifyFile(file, size)) {
+          if (verifyFile(file)) {
             const body = new FormData();
             body.append("file", file);
             chunks.push(body);

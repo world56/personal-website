@@ -11,13 +11,11 @@ const asyncStat = promisify(stat);
 const asyncReadFile = promisify(readFile);
 
 interface TypeParams {
-  params: {
-    name: string;
-  };
+  params: Promise<{ name: string }>;
 }
 
-export async function GET(request: NextRequest, params: TypeParams) {
-  const { name } = params.params;
+export async function GET(_request: NextRequest, params: TypeParams) {
+  const { name } = await params.params;
   try {
     if (name.includes("config.json")) {
       throw new Error("No resources found");

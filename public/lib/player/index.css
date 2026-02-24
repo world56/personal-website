@@ -26,8 +26,8 @@
 }
 
 .player-audio media-play-button {
-  --media-button-icon-width: 25px;
-  --media-button-icon-height: 25px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   margin-right: 20px;
 }

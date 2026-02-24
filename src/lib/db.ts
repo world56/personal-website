@@ -8,8 +8,9 @@ import {
 } from "fs";
 import { join } from "path";
 import { Cacheable } from "cacheable";
-import { PrismaClient } from "@prisma/client";
 import { checkLanguage } from "@/lib/language";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaClient } from "../../generated/prisma/client";
 
 import type { CacheableOptions } from "cacheable";
 
@@ -97,7 +98,9 @@ class MemoryStorage extends Cacheable {
   }
 }
 
-const prisma = global.prisma || new PrismaClient();
+const prisma =
+  global.prisma ||
+  new PrismaClient({ adapter: new PrismaMariaDb(process.env.DATABASE_URL!) });
 global.prisma = prisma;
 
 const DBlocal = global.DBlocal || new LocalStorage();

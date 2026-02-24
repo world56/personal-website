@@ -1,8 +1,10 @@
+"use client";
+
 import {
   ColumnDef,
   flexRender,
-  getCoreRowModel,
   useReactTable,
+  getCoreRowModel,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -15,17 +17,17 @@ import {
 import Loading from "../Loading";
 import { useTranslations } from "next-intl";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface PrimaryId {
+  id: React.Key;
+}
+
+interface TypeTableProps<T extends PrimaryId = PrimaryId> {
+  columns: ColumnDef<T>[];
+  data?: PrimaryId[];
   loading?: boolean;
 }
 
-function DataTable<TData, TValue>({
-  data,
-  columns,
-  loading,
-}: DataTableProps<TData, TValue>) {
+const DataTable = ({ columns, loading, data = [] }: TypeTableProps) => {
   const t = useTranslations("common");
 
   const table = useReactTable({
@@ -39,27 +41,25 @@ function DataTable<TData, TValue>({
       <Loading loading={loading}>
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table?.getHeaderGroups()?.map?.((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      style={{
-                        textAlign: "center",
-                        minWidth: header.column.columnDef.size,
-                        maxWidth: header.column.columnDef.size,
-                      }}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    style={{
+                      textAlign: "center",
+                      minWidth: header.column.columnDef.size,
+                      maxWidth: header.column.columnDef.size,
+                    }}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -67,7 +67,7 @@ function DataTable<TData, TValue>({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
-                  key={row.id}
+                  key={row.original.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -101,6 +101,6 @@ function DataTable<TData, TValue>({
       </Loading>
     </div>
   );
-}
+};
 
 export default DataTable;

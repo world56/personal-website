@@ -46,16 +46,19 @@
   },
   "menu": {
     "title": "首頁管理",
-    "basic": "基本資訊",
+    "website": "站点设置",
+    "personal": "個人資料",
+    "post": "文章管理",
     "life": "個人生活",
     "projects": "專案成果",
     "notes": "學習筆記",
     "message": "留言訊息",
     "resource": "資源管理",
     "log": "日誌管理",
-    "system": "系統設定"
+    "system": "系統設定",
+    "logout": "登出"
   },
-  "basicFormHint": {
+  "basic": {
     "icon": "圖標不得為空",
     "name": "名稱不得為空",
     "description": "描述不得為空",
@@ -64,19 +67,19 @@
     "fullName": "姓名至少2個字元，且不得為空",
     "position": "崗位、專業名稱至少2個字元，且不得為空"
   },
-  "site": {
+  "website": {
     "title": "網站資訊",
     "description": "設定網站基本資訊，提升SEO質量",
     "icon": "網站圖標",
     "iconDesc": "瀏覽器標籤顯示的網站圖標，支持ico、png、svg等常用格式",
     "siteTitle": "網站標題",
-    "siteTitlePlaceholder": "請輸入網站標題",
+    "siteTitlePh": "請輸入網站標題",
     "siteTitleDesc": "瀏覽器標籤顯示的網站名稱",
     "desc": "網站描述",
     "descPlaceholder": "請輸入網站描述",
     "descDesc": "搜尋引擎會讀取該資訊，並將其用作搜尋結果中的摘要",
     "recorded": "網站備案號",
-    "recordedPlaceholder": "請輸入網站備案號",
+    "recordedPh": "請輸入網站備案號",
     "recordedDesc": "依據中國大陸法規，域名備案號必須顯示在頁面底部（依部署地選填）"
   },
   "personal": {
@@ -84,13 +87,13 @@
     "description": "首頁左側個人資訊欄，可配置頭像、姓名、職位、自訂個人標籤內容",
     "avatar": "頭像",
     "name": "姓名",
-    "namePlaceholder": "請輸入您的姓名",
+    "namePh": "請輸入您的姓名",
     "position": "職位",
-    "positionPlaceholder": "請輸入您的職位、專業",
+    "positionPh": "請輸入您的職位、專業",
     "positionDesc": "例如，前端開發工程師、數據開發工程師",
     "tag": "個人標籤"
   },
-  "introduction": {
+  "intro": {
     "title": "個人簡介",
     "description": "更詳細地介紹自己的經歷、性格、愛好、想法，以便他人能更快了解您"
   },
@@ -110,23 +113,23 @@
   },
   "postEdit": {
     "insert": "新增內容",
-    "update": "編輯內容",
+    "basicInfo": "基本資料",
     "cover": "內容封面",
     "title": "內容標題",
-    "titlePlaceholder": "請輸入內容標題",
+    "titlePh": "請輸入內容標題",
     "abstract": "內容摘要",
-    "abstractPlaceholder": "請輸入內容摘要",
+    "abstractPh": "請輸入內容摘要",
     "abstractDesc": "搜尋引擎會讀取該信息，並將其用作搜尋結果中的摘要",
     "textContent": "文本內容",
     "footer": "頁腳資訊",
-    "footerPlaceholder": "請輸入自定義頁尾資訊",
+    "footerPh": "請輸入自定義頁尾資訊",
     "footerDesc": "位於文本內容底部，居中顯示（版權聲明、免責聲明）",
-    "footerDefaultContent": "© 版權所有，請註明原鏈接",
+    "footerDefContent": "© 著作權所有，轉載請註明出處",
     "formIcon": "封面圖標不可為空",
     "formContent": "文本內容不可為空",
     "formTitle": "標題至少包含2個字符，且不得為空",
     "formFooter": "頁腳資訊最多支持30個字符",
-    "formDescription": "摘要最多支持100個字符"
+    "formDesc": "摘要最多支持100個字符"
   },
   "messages": {
     "title": "留言列表",
@@ -179,6 +182,7 @@
     "signin": "系統登錄",
     "access": "訪客訪問",
     "password": "修改密碼",
+    "unauth": "未經授權訪問",
     "IPPlaceholder": "輸入完整IP進行查詢",
     "timeRangeDesc": "選擇時間範圍",
     "IPDesc": "訪客IP會因多種因素受到干擾，準確性難以保證，僅供參考",
@@ -192,13 +196,13 @@
     "title": "管理員密碼",
     "description": "修改您的登錄密碼",
     "pwd": "舊密碼",
-    "pwdPlaceholder": "請輸入舊密碼",
+    "pwdPh": "請輸入舊密碼",
     "pwdDesc": "您正在使用的登錄密碼",
     "newPwd": "新密碼",
-    "newPwdPlaceholder": "請輸入新的登錄密碼",
+    "newPwdPh": "請輸入新的登錄密碼",
     "newPwdDesc": "支持5到12個字符，包括數字、字母和下劃線",
     "confirmPwd": "確認新密碼",
-    "confirmPwdPlaceholder": "請再次輸入新的登錄密碼",
+    "confirmPwdPh": "請再次輸入新的登錄密碼",
     "confirmPwdDesc": "輸入新密碼進行二次確認",
     "confirmPwdError": "二次確認密碼錯誤，請檢查後重試",
     "success": "修改登錄密碼成功",

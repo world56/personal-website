@@ -1,4 +1,4 @@
-export const CONFIG = {
+export default {
   license_key: "gpl",
   skin: false,
   content_css: false,

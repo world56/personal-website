@@ -1,12 +1,17 @@
+import React from "react";
 import Script from "next/script";
-import Navigation from "@/components/Navigation/Console";
+import NavbaNavigationr from "@/components/Navigation/Console";
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <main className="w-[1300px] mx-auto flex justify-between">
-    <Navigation />
-    <div className="w-[1034px] rounded-3xl min-h-[730px] pt-[58px] relative">
+interface TypeConsoleProps {
+  children?: React.ReactNode;
+}
+
+const Layout: React.FC<TypeConsoleProps> = ({ children }) => (
+  <>
+    <NavbaNavigationr />
+    <main className="md:ml-62.5 md:mt-14 ml-auto mb-19.5 mr-0 w-257 relative">
       {children}
-    </div>
+    </main>
     <Script src="/lib/tinymce/tinymce.min.js" />
     <Script src="/lib/tinymce/models/dom/model.min.js" />
     <Script src="/lib/tinymce/themes/silver/theme.min.js" />
@@ -21,7 +26,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <Script src="/lib/tinymce/plugins/pageembed/plugin.min.js" />
     <Script src="/lib/tinymce/plugins/codesample/plugin.min.js" />
     <Script src="/lib/tinymce/plugins/searchreplace/plugin.min.js" />
-  </main>
+  </>
 );
 
 export default Layout;

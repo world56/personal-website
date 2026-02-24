@@ -1,11 +1,11 @@
 import Image from "next/image";
-import { uploadFile } from "@/app/api";
 import { useTranslations } from "next-intl";
+import { upload } from "@/actions/resource";
 import { useState, forwardRef } from "react";
 import { getUploadFiles } from "@/lib/filter";
 import { CameraFilled, LoadingOutlined } from "@ant-design/icons";
 
-import { API_RESOURCE } from "@/app/api";
+import { API_RESOURCE } from "@/config/common";
 
 import type { ForwardRefRenderFunction } from "react";
 
@@ -35,19 +35,16 @@ const UploadImage: TypeUploadImageRefProps = (
 ) => {
   const t = useTranslations("common");
 
-  const toWhite = size === "small" ? "dark:dark-icon" : "";
-
   const [load, setLoad] = useState(false);
   const [val, setVal] = useState<string>();
 
   async function onStart() {
     try {
-      const [file] = await getUploadFiles({
-        size: 3145728,
-        accept: ".svg, .jpg, .jpeg, .png, .ico, .webp",
-      });
+      const [file] = await getUploadFiles(
+        ".svg, .jpg, .jpeg, .png, .ico, .webp",
+      );
       setLoad(true);
-      const { path } = await uploadFile(file);
+      const { path } = await upload(file);
       updateValue(path);
       setLoad(false);
     } catch (error) {
@@ -59,25 +56,25 @@ const UploadImage: TypeUploadImageRefProps = (
     onChange ? onChange(val) : setVal(val);
   }
 
-  function getValue() {
-    return value || val || "";
-  }
-
-  const RESOURCE_URL = getValue();
-
   const STYLE = SIZE[size];
 
-  const borderRadius = radius ? "rounded-full" : "rounded-md";
+  const RESOURCE_URL = value || val || "";
+
+  const TO_WHITE = size === "small" ? "dark:dark-icon" : "";
+
+  const BORDER_RADIUS = radius ? "rounded-full" : "rounded-md";
+
+  const IS_SVG = RESOURCE_URL?.split(".")?.at?.(-1) === "svg";
 
   return (
     <div
       ref={ref}
       onClick={onStart}
       className={`
+       dark:text-white dark:hover:border-white
          relative flex justify-center items-center flex-col ${STYLE.IMG} 
          cursor-pointer border border-dashed overflow-hidden select-none ${className}
-        border-gray-400 text-gray-600 hover:border-black hover:text-black ${borderRadius}
-        dark:text-white dark:hover:border-white
+       border-gray-400 text-gray-600 hover:border-black hover:text-black ${BORDER_RADIUS}
       `}
     >
       {RESOURCE_URL ? (
@@ -88,7 +85,8 @@ const UploadImage: TypeUploadImageRefProps = (
             width={STYLE.SIZE}
             height={STYLE.SIZE}
             src={`${API_RESOURCE}${RESOURCE_URL}`}
-            className={`w-full h-full object-cover ${toWhite} ${borderRadius}`}
+            className={`w-full h-full object-cover ${TO_WHITE} 
+            ${radius ? "rounded-full" : "rounded-md"} ${IS_SVG ? "icon" : ""}`}
           />
           {load ? (
             <LoadingOutlined className="text-sm absolute text-black dark:text-white" />

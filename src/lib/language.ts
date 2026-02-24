@@ -11,8 +11,9 @@ export function getHtmlLanguage() {
   return document?.getElementsByTagName("html")[0].lang as ENUM_COMMON.LANG;
 }
 
-export default async function getClientI18n() {
-  let locale = getHtmlLanguage();
+export default async function getClientI18n(
+  locale: string = getHtmlLanguage(),
+) {
   const messages = await import(`../../language/${locale}.json`);
   return createTranslator({ locale, messages: messages.default });
 }

@@ -1,39 +1,39 @@
 "use client";
 
 import { toast } from "sonner";
+import { useState } from "react";
 import Card from "@/components/Card";
 import Select from "@/components/Select";
 import { dateToTime } from "@/lib/format";
-import { useMemo, useState } from "react";
 import Confirm from "@/components/Confirm";
 import Tooltip from "@/components/Tooltip";
 import DataTable from "@/components/Table";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
-import LoadingButton from "@/components/Button";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { SyncOutlined } from "@ant-design/icons";
 import { useClientLang, usePosts } from "@/hooks";
 import PageTurning from "@/components/PageTurning";
+import LoadingButton from "@/components/LoadButton";
 import { PlusCircleOutlined } from "@ant-design/icons";
-import { deletePost, updatePostStatus } from "@/app/api";
+import { deletePost, updatePostStatus } from "@/actions/post";
 
 import { ENUM_COMMON } from "@/enum/common";
 
-import type { Post } from "@prisma/client";
+import type { Post } from "model";
 import type { ColumnDef } from "@tanstack/react-table";
 
 const Posts = () => {
   const router = useRouter();
-  const t = useTranslations("postTable");
-  const tCommon = useTranslations("common");
-
-  const [deleteId, setDeleteId] = useState<Post["id"]>();
+  const t = useTranslations();
 
   const lang = useClientLang();
-  const { title, query, path, type, data, loading, run, setQuery } = usePosts();
+
+  const { query, path, data, title, loading, onRefresh, setQuery } = usePosts();
+
+  const [deleteId, setDeleteId] = useState<Post["id"]>();
 
   function onEdit(row?: Post) {
     router.push(`/console/post/${path}/${row?.id || -1}`);
@@ -41,8 +41,8 @@ const Posts = () => {
 
   async function onStatus({ id }: Post, status: boolean) {
     await updatePostStatus({ id, status: Number(status) });
-    toast.success(tCommon("saveSuccess"));
-    run();
+    toast.success(t("common.saveSuccess"));
+    onRefresh();
   }
 
   function onSelectStatus(status: Post["status"]) {
@@ -63,9 +63,9 @@ const Posts = () => {
 
   async function onDelete(id?: Post["id"]) {
     if (id) {
-      await deletePost({ id, type });
-      toast.success(tCommon("deleteSuccess"));
-      run();
+      await deletePost({ id });
+      toast.success(t("common.deleteSuccess"));
+      onRefresh();
     }
     setDeleteId(undefined);
   }
@@ -74,18 +74,15 @@ const Posts = () => {
     setQuery((v) => ({ ...v, current }));
   }
 
-  const SELECT_ITEMS = useMemo(
-    () => [
-      { value: ENUM_COMMON.STATUS.ENABLE, label: t("statusTrue") },
-      { value: ENUM_COMMON.STATUS.DISABLE, label: t("statusFalse") },
-    ],
-    [t],
-  );
+  const SELECT_ITEMS = [
+    { value: ENUM_COMMON.STATUS.ENABLE, label: t("postTable.statusTrue") },
+    { value: ENUM_COMMON.STATUS.DISABLE, label: t("postTable.statusFalse") },
+  ];
 
   const columns: ColumnDef<Post>[] = [
     {
       accessorKey: "title",
-      header: t("title"),
+      header: t("postTable.title"),
       size: 265,
       cell: ({ row }) => (
         <Tooltip
@@ -98,7 +95,7 @@ const Posts = () => {
     },
     {
       accessorKey: "status",
-      header: t("status"),
+      header: t("postTable.status"),
       size: 60,
       cell: ({ row }) => (
         <Switch
@@ -110,7 +107,7 @@ const Posts = () => {
     },
     {
       accessorKey: "createTime",
-      header: t("createTime"),
+      header: t("postTable.createTime"),
       size: 100,
       cell: ({ row }) => (
         <p className="text-center">{dateToTime(row.original.createTime)}</p>
@@ -118,7 +115,7 @@ const Posts = () => {
     },
     {
       accessorKey: "id",
-      header: tCommon("operate"),
+      header: t("common.operate"),
       size: 100,
       cell: ({ row }) => {
         const { status } = row.original;
@@ -128,10 +125,10 @@ const Posts = () => {
               type="button"
               disabled={!status}
               onClick={() => onSkip(row.original)}
-              title={status ? undefined : tCommon("deleteDesc")}
+              title={status ? undefined : t("common.deleteDesc")}
               className={`p-2 ${status ? "" : "dark:text-gray-500"}`}
             >
-              {tCommon("preview")}
+              {t("common.preview")}
             </Tooltip>
 
             <Button
@@ -139,14 +136,14 @@ const Posts = () => {
               className="p-2"
               onClick={() => onEdit(row.original)}
             >
-              {tCommon("update")}
+              {t("common.update")}
             </Button>
             <Button
               variant="link"
               className="p-2 text-red-500"
               onClick={() => onConfirmDelete(row.original)}
             >
-              {tCommon("delete")}
+              {t("common.delete")}
             </Button>
           </div>
         );
@@ -156,32 +153,36 @@ const Posts = () => {
 
   return (
     <Card
-      spacing={4}
+      gap={4}
       title={title}
-      description={`${t("description")}${lang === "en" ? " " : ""}${title}`}
+      description={`${t("postTable.description")}${lang === "en" ? " " : ""}${title}`}
     >
       <div className="flex justify-between">
         <div className="flex">
           <Select
             value={query.status}
             items={SELECT_ITEMS}
-            placeholder={t("status")}
+            placeholder={t("postTable.status")}
             onChange={onSelectStatus}
           />
           <Input
             className="w-60 mx-3"
             onChange={onTitleChange}
             defaultValue={query.title}
-            placeholder={t("titlePlaceholder")}
+            placeholder={t("postTable.titlePlaceholder")}
           />
-          <LoadingButton onClick={run} loading={loading} icon={SyncOutlined} />
+          <LoadingButton
+            loading={loading}
+            icon={SyncOutlined}
+            onClick={onRefresh}
+          />
         </div>
-        <Button onClick={() => onEdit()}>
+        <Button className="cursor-pointer" onClick={() => onEdit()}>
           <PlusCircleOutlined />
-          {t("insert")}
+          {t("postTable.insert")}
         </Button>
       </div>
-      <DataTable loading={loading} columns={columns} data={data?.list || []} />
+      <DataTable data={data?.list} loading={loading} columns={columns as []} />
       <PageTurning
         total={data?.total}
         current={query.current}

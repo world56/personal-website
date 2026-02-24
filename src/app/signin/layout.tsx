@@ -1,12 +1,10 @@
 import Script from "next/script";
 
-import type { Metadata } from "next";
+interface TypeSigninProps {
+  children?: React.ReactNode;
+}
 
-export const metadata: Metadata = {
-  title: "Admin",
-};
-
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+const Layout: React.FC<TypeSigninProps> = ({ children }) => (
   <>
     {children}
     <Script src="/lib/tinymce/tinymce.min.js" />
@@ -16,17 +14,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <Script src="/lib/tinymce/plugins/link/plugin.min.js" />
     <Script src="/lib/tinymce/plugins/table/plugin.min.js" />
     <Script src="/lib/tinymce/plugins/lists/plugin.min.js" />
-    <Script src="/lib/tinymce/plugins/media/plugin.min.js" />
     <Script src="/lib/tinymce/plugins/image/plugin.min.js" />
-    <Script src="/lib/tinymce/plugins/anchor/plugin.min.js" />
-    <Script src="/lib/tinymce/plugins/charmap/plugin.min.js" />
     <Script src="/lib/tinymce/plugins/advlist/plugin.min.js" />
-    <Script src="/lib/tinymce/plugins/autolink/plugin.min.js" />
-    <Script src="/lib/tinymce/plugins/wordcount/plugin.min.js" />
+    <Script src="/lib/tinymce/plugins/checklist/plugin.min.js" />
+    <Script src="/lib/tinymce/plugins/editimage/plugin.min.js" />
+    <Script src="/lib/tinymce/plugins/pageembed/plugin.min.js" />
     <Script src="/lib/tinymce/plugins/codesample/plugin.min.js" />
-    <Script src="/lib/tinymce/plugins/visualblocks/plugin.min.js" />
     <Script src="/lib/tinymce/plugins/searchreplace/plugin.min.js" />
-    <Script src="/lib/tinymce/plugins/insertdatetime/plugin.min.js" />
   </>
 );
 

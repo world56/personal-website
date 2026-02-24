@@ -176,7 +176,15 @@
 .dark {
   .main-title {
     color: white;
-    background: #34363c;
+    background: #27272a;
+  }
+
+  .tox .tox-number-input input:disabled {
+    background: transparent;
+  }
+
+  .tox .tox-number-input button:disabled {
+    background: transparent;
   }
 
   .tox-tinymce {

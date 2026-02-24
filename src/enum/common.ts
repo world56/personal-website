@@ -98,6 +98,11 @@ export namespace ENUM_COMMON {
      * @param PASSWORD 修改密码
      */
     PASSWORD,
+    /**
+     * @param UNAUTHORIZED 未经授权访问
+     * @description 一般是客户端绕过系统密钥进行访问，需要引起注意
+     */
+    UNAUTHORIZED,
   }
 
   export enum LANG {
