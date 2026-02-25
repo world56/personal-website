@@ -45,7 +45,7 @@ export default function usePosts(defaultStatus?: ENUM_COMMON.STATUS) {
     title: IS_CONSOLE ? search?.get("title") || undefined : undefined,
   });
 
-  const deferredQuery = useDebounceValue(query);
+  const deferredQuery = useDebounceValue(query, IS_CONSOLE ? 200 : 0);
   const { type, status, title, current, pageSize } = deferredQuery;
 
   const { data, isFetching } = useQuery({

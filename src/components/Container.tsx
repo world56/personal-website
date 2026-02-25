@@ -11,7 +11,7 @@ const Container: React.FC<TypeContainerProps> = ({
   className = "",
 }) => (
   <section
-    className={`md:p-7.5 md:pt-22.5 md:m-0 m-3 p-4 bg-card shadow-custom md:min-h-180 rounded-3xl mb-6 ${className}`}
+    className={`md:p-7.5 p-4 md:pt-22.5 md:mx-0 mx-3 md:min-h-180 bg-card shadow-custom rounded-3xl mb-3 ${className}`}
   >
     {children}
   </section>

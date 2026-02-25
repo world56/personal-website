@@ -21,7 +21,9 @@ declare global {
   var DBlocal: {
     FOLDER_PATH: string;
     set(data: object): Record<string, string>;
-    get(): Omit<TypeCommon.ProfileDTO, "items" | "skills">;
+    get(): Omit<TypeCommon.ProfileDTO, "items" | "skills"> & {
+      language: string;
+    };
     remove(path: string): boolean;
     language(): string;
   };
