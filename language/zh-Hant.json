@@ -282,7 +282,7 @@
     "reqError": "請求異常，請檢查後再試",
     "fileLimit": "檔案大小超過最大限制",
     "fileTooLarge": "{fileName} 超過上傳最大限制 {maxSize}，上傳失敗",
-    "notFound": "這不是一個有效的（URL）訪問地址，請確認後重試。",
+    "notFound": "這不是一個有效的（URL）訪問地址",
     "notFoundGoBack": "返回首頁"
   }
 }

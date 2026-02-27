@@ -162,10 +162,8 @@
   }
 }
 
-@media (max-width: 768px) {
-  .about-me > :first-child {
-    margin-top: 0 !important;
-  }
+.about-me > :first-child {
+  margin-top: 0 !important;
 }
 
 .tox-editor-container .tox-edit-area__iframe {

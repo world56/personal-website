@@ -1,2 +1,22 @@
 .mce-content-body
   @import "../../public/lib/tinymce/skins/content/default/content.min.css"
+
+.mce-content-body
+  > *:not(.media-controller):not(.media-controller *):not(
+    .mce-resizehandle
+  ):not(.tiny-pageembed *):not(.main-title):not(.tiny-pageembed):not(
+    blockquote
+  ):not(h1) 
+      margin: revert
+      height: revert
+      display: revert
+      outline: revert
+      padding: revert
+      font-size: revert
+      max-width: revert
+      list-style: revert
+      font-weight: revert
+      border-width: revert
+      border-style: revert
+      border-color: revert
+      vertical-align: revert

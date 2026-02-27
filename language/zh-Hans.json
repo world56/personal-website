@@ -282,7 +282,7 @@
     "reqError": "请求异常，请检查后重试",
     "fileLimit": "文件大小超过最大限制",
     "fileTooLarge": "{fileName} 超过上传最大限制 {maxSize}，上传失败",
-    "notFound": "这不是一个有效的（URL）访问地址，请确认后重试。",
+    "notFound": "这不是一个有效的（URL）访问地址",
     "notFoundGoBack": "返回首页"
   }
 }

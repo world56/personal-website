@@ -10,7 +10,7 @@ interface TypeEmpty {
 const Empty: React.FC<TypeEmpty> = () => {
   const t = useTranslations("common");
   return (
-    <div className="w-full h-130 flex justify-center flex-col items-center select-none">
+    <div className="w-full md:h-130 min-h-90 flex justify-center flex-col items-center select-none">
       <CoffeeOutlined className="text-3xl" />
       <p className="mt-2">{t("empty")}</p>
     </div>

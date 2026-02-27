@@ -127,24 +127,22 @@ export const updatePostStatus = authAction(
 /**
  * @name getClientPosts 获取博文列表（客户端）
  */
-export const getClientPosts = authAction(
-  async ({
-    type,
-    current,
-    pageSize = 1,
-  }: Pick<Post, "type"> & TypeCommon.PageTurning) => {
-    if (!POST_TYPE.includes(type)) return Promise.reject("Parameter exception");
-    const where = { type, status: ENUM_COMMON.STATUS.ENABLE };
-    const [total, list] = await Promise.all([
-      prisma.post.count({ where }),
-      prisma.post.findMany({
-        take: pageSize,
-        skip: (current - 1) * pageSize,
-        orderBy: { createTime: "desc" },
-        where: { type, status: ENUM_COMMON.STATUS.ENABLE },
-        select: { id: true, icon: true, title: true, description: true },
-      }),
-    ]);
-    return { total, list };
-  },
-);
+export async function getClientPosts({
+  type,
+  current,
+  pageSize = 1,
+}: Pick<Post, "type"> & TypeCommon.PageTurning) {
+  if (!POST_TYPE.includes(type)) return Promise.reject("Parameter exception");
+  const where = { type, status: ENUM_COMMON.STATUS.ENABLE };
+  const [total, list] = await Promise.all([
+    prisma.post.count({ where }),
+    prisma.post.findMany({
+      take: pageSize,
+      skip: (current - 1) * pageSize,
+      orderBy: { createTime: "desc" },
+      where: { type, status: ENUM_COMMON.STATUS.ENABLE },
+      select: { id: true, icon: true, title: true, description: true },
+    }),
+  ]);
+  return { total, list };
+}

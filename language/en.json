@@ -282,7 +282,7 @@
     "reqError": "Request error. Please check and try again.",
     "fileLimit": "File size exceeds the maximum limit.",
     "fileTooLarge": "{fileName} exceeds the maximum upload limit of {maxSize}. Upload failed.",
-    "notFound": "This is not a valid URL. Please check and try again.",
+    "notFound": "This is not a valid URL",
     "notFoundGoBack": "Return to Homepage"
   }
 }

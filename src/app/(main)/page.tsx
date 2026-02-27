@@ -16,7 +16,7 @@ const Page = async () => {
   return (
     <Container>
       <div
-        className="mce-content-body no-tailwindcss about-me"
+        className="mce-content-body about-me"
         dangerouslySetInnerHTML={
           local.profile ? { __html: local.profile } : undefined
         }

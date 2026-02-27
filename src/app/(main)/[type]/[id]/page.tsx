@@ -57,7 +57,7 @@ function formatEntities(encodedString: string) {
   });
 }
 
-function highlightCodeInRichText(richText: string) {
+function convertText(richText: string) {
   const codeBlockRegex =
     /<pre class="language-(\w+)"><code>([\s\S]*?)<\/code><\/pre>/g;
   let highlightedRichText = richText;
@@ -118,16 +118,14 @@ const Post: React.FC<TypePostProps> = async ({ params }) => {
         <>
           <article>
             <header>
-              <h1 className="text-3xl font-bold md:mt-2.5 mb-[22px] wrap-break-word whitespace-normal">
+              <h1 className="text-3xl font-bold mb-5 wrap-break-word whitespace-normal">
                 {res.title}
               </h1>
               <PostTools title={res.title} date={res.createTime} />
             </header>
             <section
-              dangerouslySetInnerHTML={{
-                __html: highlightCodeInRichText(res.content),
-              }}
-              className="mce-content-body no-tailwindcss mb-7 h-104.5"
+              className="mce-content-body mb-7 md:min-h-107.5 min-h-50"
+              dangerouslySetInnerHTML={{ __html: convertText(res.content) }}
             />
             {res?.footer ? (
               <footer>
