@@ -29,11 +29,11 @@ const MainNavigation = () => {
   )?.title;
 
   return (
-    <nav className="md:h-19 md:absolute md:z-10 md:top-0 md:pl-7.5 left-0 w-full h-13.5 z-10 fixed bottom-3 flex md:justify-between justify-center items-center">
+    <nav className="md:h-19 md:absolute md:z-10 md:top-0 md:pl-7.5 left-0 w-full h-13.5 z-50 fixed bottom-3 flex md:justify-between justify-center items-center">
       <span className="md:inline hidden font-bold text-2xl select-none">
         {name}
       </span>
-      <ul className="md:px-0 mx-5 md:shadow-none md:items-center md:w-max w-full h-full rounded-3xl px-2.5 flex justify-between items-center bg-white dark:bg-black shadow-light md:dark:bg-transparent">
+      <ul className="md:px-0 mx-5 md:shadow-none md:items-center md:w-max w-full h-full rounded-3xl px-2.5 z-10 flex justify-between items-center bg-white dark:bg-black shadow-light md:dark:bg-transparent">
         {routes.map((v, i) => (
           <li key={v.url}>
             <Link

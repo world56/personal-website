@@ -10,7 +10,9 @@ import { BASE_URL, TOKEN_NAME } from "@/config/common";
 /**
  * @name authAction 针对 action 鉴权
  */
-export function authAction<P extends any[], R>(fn: (...args: P) => Promise<R>) {
+export function authAction<P extends unknown[], R>(
+  fn: (...args: P) => Promise<R>,
+) {
   return async (...args: P): Promise<R> => {
     const cookie = await cookies();
     const token = cookie.get("Authorization")?.value;

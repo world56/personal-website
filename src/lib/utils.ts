@@ -10,8 +10,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function isVoid(value: any) {
-  return ["", undefined, null, NaN].includes(value);
+export function isVoid(value: unknown): boolean {
+  return (
+    value === "" || value === undefined || value === null || Number.isNaN(value)
+  );
 }
 
 export function loadStylesheet(href: string, id: string) {

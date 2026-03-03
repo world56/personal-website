@@ -2,8 +2,8 @@
 
 import { authAction } from "@/lib/auth";
 import { filterCUD } from "@/lib/filter";
-import { revalidateTag } from "next/cache";
 import { DBlocal, prisma } from "@/lib/db";
+import { revalidatePath } from "next/cache";
 import { checkLanguage } from "@/lib/language";
 
 import { ENUM_COMMON } from "@/enum/common";
@@ -66,9 +66,8 @@ export const updateProfile = authAction(
       ]);
     }
     DBlocal.set(data);
-    revalidateTag("profile", "max");
+    revalidatePath("/", "layout");
     return true;
-    // await pageRevalidate({ path: "/", type: "layout", key: process.env.SECRET! });
   },
 );
 
@@ -83,14 +82,10 @@ export async function getLanguage() {
  * @name updateLanguage 更新 系统语言
  */
 export const updateLanguage = authAction(
-  async ({ language }: { language: string }) => {
+  async ({ language }: { language: ENUM_COMMON.LANG }) => {
     if (checkLanguage(language)) {
       DBlocal.set({ language });
-      // await pageRevalidate({
-      //   path: "/",
-      //   type: "layout",
-      //   key: process.env.SECRET!,
-      // });
+      revalidatePath("/", "layout");
       return true;
     } else {
       return Promise.reject(false);
@@ -114,14 +109,14 @@ export const updatePassword = authAction(
         where: { id: admin.id },
         data: { password: newPassword },
       });
-      // insertLog({ key: process.env.SECRET!, type: ENUM_COMMON.LOG.PASSWORD });
+      await prisma.log.create({
+        data: { type: ENUM_COMMON.LOG.PASSWORD, description: "200" },
+      });
       return true;
     } else {
-      // insertLog({
-      //   description: "400",
-      //   key: process.env.SECRET!,
-      //   type: ENUM_COMMON.LOG.PASSWORD,
-      // });
+      await prisma.log.create({
+        data: { type: ENUM_COMMON.LOG.PASSWORD, description: "400" },
+      });
       return Promise.reject(false);
     }
   },

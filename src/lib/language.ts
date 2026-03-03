@@ -3,7 +3,7 @@ import { zhCN, zhTW } from "date-fns/locale";
 
 import { ENUM_COMMON } from "@/enum/common";
 
-export function checkLanguage(language: any) {
+export function checkLanguage(language: ENUM_COMMON.LANG) {
   return Object.values(ENUM_COMMON.LANG).includes(language);
 }
 

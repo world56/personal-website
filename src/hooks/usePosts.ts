@@ -36,6 +36,7 @@ export default function usePosts(defaultStatus?: ENUM_COMMON.STATUS) {
   const queryClient = useQueryClient();
 
   const IS_CONSOLE = pathname?.includes("/console");
+  const QUERY_CURRENT_ISNULL = search.get("current") === null;
 
   const [query, setQuery] = useState({
     type: postType,
@@ -74,7 +75,7 @@ export default function usePosts(defaultStatus?: ENUM_COMMON.STATUS) {
         : search.delete("status");
     }
     router.replace(`${pathname}?${search.toString()}`);
-  }, [deferredQuery]);
+  }, [deferredQuery,QUERY_CURRENT_ISNULL]);
 
   useEffect(() => {
     const total = data?.total;
