@@ -9,12 +9,13 @@ COPY ./prisma ./builder/prisma
 COPY ./language ./builder/language
 COPY ./public ./builder/public
 COPY ./src ./builder/src
-COPY ./next.config.js ./builder/next.config.js
-COPY ./postcss.config.js ./builder/postcss.config.js
-COPY ./tailwind.config.js ./builder/tailwind.config.js
+COPY ./next.config.ts ./builder/next.config.ts
+COPY ./prisma.config.ts ./builder/prisma.config.ts
+COPY ./postcss.config.mjs ./builder/postcss.config.mjs
 COPY ./tsconfig.json ./builder/tsconfig.json
-COPY ./build.sh ./builder/build.sh
-COPY docker.sh ./docker.sh
+COPY ./scripts/docker.sh ./docker.sh
+COPY ./scripts/build.sh ./builder/scripts/build.sh
+
 RUN chmod +x ./docker.sh
 
 WORKDIR /app/builder

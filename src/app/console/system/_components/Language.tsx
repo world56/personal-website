@@ -22,8 +22,8 @@ import Card from "@/components/Card";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getLanguage, updateLanguage } from "@/actions/settings";
 
 import { ENUM_COMMON } from "@/enum/common";
@@ -36,8 +36,7 @@ const Language = () => {
   const { data, isFetching } = useQuery({
     queryFn: getLanguage,
     queryKey: ["language"],
-    placeholderData: "",
-    // initialData: () => "",
+    placeholderData: ""
   });
 
   const form = useForm<z.infer<typeof schema>>({
@@ -56,7 +55,12 @@ const Language = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit((e) => mutate(e))} className="mt-3">
+      <form
+        className="mt-3"
+        onSubmit={form.handleSubmit((e) =>
+          mutate(e as { language: ENUM_COMMON.LANG }),
+        )}
+      >
         <Card
           gap={4}
           title={t("title")}
