@@ -18,7 +18,7 @@ const Layout: React.FC<TypeMainProps> = ({ children }) => {
         {children}
       </main>
       {config.forTheRecord ? (
-        <footer className="mb-19.5 md:my-6 mx-auto text-center">
+        <footer className="mb-19.5 md:my-6 mx-auto text-center md:clear-left">
           <a
             target="_blank"
             className="md:pl-76.5 text-zinc-400 text-sm"

@@ -37,7 +37,7 @@ const PostTools: React.FC<TypePostToolsProps> = ({ date, title }) => {
   function onCopy() {
     toast(tPost("copyTitle"), { description: tPost("copyContent") });
     const textarea = document.createElement("textarea");
-    textarea.value = `${title}\n${window.location.href}`;
+    textarea.value = `${title} ${window.location.href}`;
     textarea.style.position = "fixed";
     textarea.style.top = "0px";
     textarea.style.left = "0px";

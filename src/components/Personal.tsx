@@ -21,7 +21,7 @@ const Personal = async () => {
   const length = items?.length;
 
   return (
-    <aside className="md:w-75 md:top-14 md:leading-normal md:m-0 md:p-7.5 m-3 h-full p-4 md:fixed md:h-max text-center shadow-custom rounded-3xl bg-white dark:bg-card">
+    <aside className="md:w-75 md:float-left md:leading-normal md:m-0 md:p-7.5 m-3 h-full p-4 md:h-max min-[1300px]:float-none min-[1300px]:fixed min-[1300px]:top-14 min-[1300px]:mt-0 text-center shadow-custom rounded-3xl bg-white dark:bg-card">
       <Image
         alt="#"
         priority
