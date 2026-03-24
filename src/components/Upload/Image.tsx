@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { upload } from "@/actions/resource";
 import { useState, forwardRef } from "react";
 import { getUploadFiles } from "@/lib/filter";
+import { useQueryClient } from "@tanstack/react-query";
 import { CameraFilled, LoadingOutlined } from "@ant-design/icons";
 
 import { API_RESOURCE } from "@/config/common";
@@ -43,6 +44,8 @@ const UploadImage: TypeUploadImageRefProps = (
 ) => {
   const t = useTranslations("common");
 
+  const queryClient = useQueryClient();
+
   const [load, setLoad] = useState(false);
   const [val, setVal] = useState<string>();
 
@@ -53,6 +56,7 @@ const UploadImage: TypeUploadImageRefProps = (
       );
       setLoad(true);
       const { path } = await upload(file);
+      queryClient.invalidateQueries({ queryKey: ["resource"] });
       updateValue(path);
       setLoad(false);
     } catch (error) {

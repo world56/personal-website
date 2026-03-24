@@ -7,6 +7,7 @@ import { upload } from "@/actions/resource";
 import { loadStylesheet } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { getTinymceLanguage } from "@/lib/language";
+import { useQueryClient } from "@tanstack/react-query";
 import { getFileType, getUploadFiles } from "@/lib/filter";
 
 import CONFIG from "./config";
@@ -37,6 +38,8 @@ const TextEditor: React.FC<TypeTxtEditorProps> = ({
 }) => {
   const { systemTheme } = useTheme();
   const t = useTranslations("textEditor");
+
+  const queryClient = useQueryClient();
 
   const edit = useRef<Editor>(null);
 
@@ -173,6 +176,7 @@ const TextEditor: React.FC<TypeTxtEditorProps> = ({
         for await (const file of files) {
           try {
             const { path } = await upload(file);
+            queryClient.invalidateQueries({ queryKey: ["resource"] });
             num++;
             const type = getFileType(path);
             const url = `/api/resource/${path}`;
