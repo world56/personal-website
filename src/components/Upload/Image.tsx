@@ -17,6 +17,7 @@ type TypeUploadImageRefProps<T = string> = ForwardRefRenderFunction<
     readonly value?: T;
     onChange?(value?: T): void;
     className?: string;
+    noSvgDark?: boolean;
   }
 >;
 
@@ -30,7 +31,14 @@ const SIZE = {
  * @name UploadImage 上传图片
  */
 const UploadImage: TypeUploadImageRefProps = (
-  { size = "middle", radius = true, className = "", value, onChange },
+  {
+    value,
+    onChange,
+    noSvgDark,
+    radius = true,
+    className = "",
+    size = "middle",
+  },
   ref,
 ) => {
   const t = useTranslations("common");
@@ -64,7 +72,9 @@ const UploadImage: TypeUploadImageRefProps = (
 
   const BORDER_RADIUS = radius ? "rounded-full" : "rounded-md";
 
-  const IS_SVG = RESOURCE_URL?.split(".")?.at?.(-1) === "svg";
+  const IS_SVG = noSvgDark
+    ? false
+    : RESOURCE_URL?.split(".")?.at?.(-1) === "svg";
 
   return (
     <div

@@ -118,7 +118,7 @@ const Post: React.FC<TypePostProps> = async ({ params }) => {
         <>
           <article>
             <header>
-              <h1 className="text-3xl font-bold mb-5 wrap-break-word whitespace-normal">
+              <h1 className="md:mb-5 mb-4 text-3xl font-bold wrap-break-word whitespace-normal">
                 {res.title}
               </h1>
               <PostTools title={res.title} date={res.createTime} />

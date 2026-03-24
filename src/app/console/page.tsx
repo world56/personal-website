@@ -58,7 +58,7 @@ const Website = () => {
               <FormItem>
                 <FormLabel>{t("website.icon")}</FormLabel>
                 <FormControl>
-                  <UploadImage {...field} />
+                  <UploadImage {...field} noSvgDark />
                 </FormControl>
                 <FormMessage />
                 <FormDescription>{t("website.iconDesc")}</FormDescription>
