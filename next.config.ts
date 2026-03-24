@@ -2,6 +2,29 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 import type { NextConfig } from "next";
 
+function serverActionsAllowedOrigins() {
+  const fromEnv = process.env.SERVER_ACTIONS_ALLOWED_ORIGINS;
+  if (fromEnv?.trim()) {
+    return fromEnv
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  const site = process.env.NEXT_PUBLIC_SITE_URL;
+  if (site?.trim()) {
+    try {
+      const host = new URL(site.startsWith("http") ? site : `https://${site}`)
+        .hostname;
+      return host ? [host] : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+const allowedOrigins = serverActionsAllowedOrigins();
+
 const nextConfig: NextConfig = {
   /* config options here */
   output: "standalone",
@@ -10,6 +33,7 @@ const nextConfig: NextConfig = {
     proxyClientMaxBodySize: "20mb",
     serverActions: {
       bodySizeLimit: "20mb",
+      ...(allowedOrigins.length > 0 ? { allowedOrigins } : {}),
     },
   },
   images: {
