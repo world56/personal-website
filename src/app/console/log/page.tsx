@@ -117,7 +117,7 @@ const Log = () => {
     {
       accessorKey: "description",
       size: 80,
-      header: t("code"),
+      header: t("desc"),
       cell: ({ row }) => (
         <p className="text-center">{row.original.description}</p>
       ),
