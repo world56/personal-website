@@ -283,6 +283,7 @@
     "fileLimit": "文件大小超过最大限制",
     "fileTooLarge": "{fileName} 超过上传最大限制 {maxSize}，上传失败",
     "notFound": "这不是一个有效的（URL）访问地址",
+    "error": "发生错误，请稍后重试",
     "notFoundGoBack": "返回首页"
   }
 }

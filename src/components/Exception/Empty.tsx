@@ -3,9 +3,7 @@
 import { useTranslations } from "next-intl";
 import { CoffeeOutlined } from "@ant-design/icons";
 
-interface TypeEmpty {
-  // height?: number;
-}
+interface TypeEmpty {}
 
 const Empty: React.FC<TypeEmpty> = () => {
   const t = useTranslations("common");

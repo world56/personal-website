@@ -283,6 +283,7 @@
     "fileLimit": "File size exceeds the maximum limit.",
     "fileTooLarge": "{fileName} exceeds the maximum upload limit of {maxSize}. Upload failed.",
     "notFound": "This is not a valid URL",
+    "error": "An error occurred. Please try again later.",
     "notFoundGoBack": "Return to Homepage"
   }
 }

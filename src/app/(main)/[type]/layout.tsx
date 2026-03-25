@@ -1,5 +1,5 @@
-import NotFound from "@/components/NotFound";
 import Container from "@/components/Container";
+import NotFound from "@/components/Exception/NotFound";
 
 import { POST_PATH } from "@/config/common";
 

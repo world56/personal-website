@@ -2,8 +2,8 @@
 
 import { usePosts } from "@/hooks";
 import Post from "@/components/Post";
-import Empty from "@/components/Empty";
 import Container from "@/components/Container";
+import Empty from "@/components/Exception/Empty";
 import PageTurning from "@/components/PageTurning";
 import { LoadingOutlined } from "@ant-design/icons";
 

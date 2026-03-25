@@ -1,9 +1,9 @@
 import Prism from "prismjs";
 import { prisma } from "@/lib/db";
-import Empty from "@/components/Empty";
 import { unstable_cache } from "next/cache";
 import PostTools from "./_components/Tools";
 import Container from "@/components/Container";
+import Empty from "@/components/Exception/Empty";
 
 import "prismjs/components/prism-c.min.js";
 import "prismjs/components/prism-go.min.js";
@@ -80,21 +80,25 @@ function convertText(richText: string) {
   return highlightedRichText;
 }
 
-const requestPost = (id: number, type: number) =>
-  unstable_cache(
-    () =>
-      prisma.post.findUnique({
-        where: { id: Number(id), type, status: ENUM_COMMON.STATUS.ENABLE },
-      }),
-    [`post-${id}-${type}`],
-    { tags: [`post-${id}`], revalidate: false },
-  )();
+const requestPost = (id: number, type: number) => {
+  const PRIMARY_ID = Number(id);
+  return Number.isFinite(PRIMARY_ID)
+    ? unstable_cache(
+        () =>
+          prisma.post.findUnique({
+            where: { id: Number(id), type, status: ENUM_COMMON.STATUS.ENABLE },
+          }),
+        [`post-${id}-${type}`],
+        { tags: [`post-${id}`], revalidate: false },
+      )()
+    : null;
+};
 
 export async function generateMetadata({ params }: TypePostProps) {
   const { id, type } = await params;
   const res = await requestPost(id, POST_TYPE[type]);
   return {
-    title: res?.title ? res.title : "not found",
+    title: res?.title ? res.title : "Not found",
     description: res?.description,
   };
 }

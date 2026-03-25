@@ -18,6 +18,8 @@ import { Input } from "@/components/ui/input";
 import Upload from "@/components/Upload/Image";
 import TxtEditor from "@/components/TextEditor";
 import { Button } from "@/components/ui/button";
+import Error from "@/components/Exception/Error";
+import Empty from "@/components/Exception/Empty";
 import LoadingButton from "@/components/LoadButton";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,10 +48,13 @@ const Edit = () => {
   const id = params?.id === "-1" ? undefined : Number(params?.id);
   const type = POST_TYPE[params?.type! as keyof typeof POST_TYPE];
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     enabled: Boolean(id),
     queryKey: ["post-edit", id],
-    queryFn: () => getPost({ id: id! }),
+    queryFn: async () => {
+      const post = await getPost({ id: id! });
+      return post ? post : Promise.reject();
+    },
   });
 
   const { mutate, isPending } = useMutation({
@@ -58,7 +63,7 @@ const Edit = () => {
     onSuccess: () => {
       toast.success(t("common.saveSuccess"));
       query.invalidateQueries({ queryKey: ["posts", type] });
-      query.invalidateQueries({ queryKey: ["post-post", id] });
+      query.invalidateQueries({ queryKey: ["post-edit", id] });
       onBack();
     },
   });
@@ -79,7 +84,11 @@ const Edit = () => {
     router.back();
   }
 
-  return (
+  return isError || Number.isNaN(id) ? (
+    <Card title={t("postEdit.basicInfo")} onBack={onBack}>
+      {isError ? <Empty /> : <Error />}
+    </Card>
+  ) : (
     <Form {...form}>
       <form onSubmit={form.handleSubmit((e) => mutate(e))}>
         <Card
