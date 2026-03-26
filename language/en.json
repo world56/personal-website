@@ -30,7 +30,7 @@
     "formPhone": "Please enter a valid phone number (use - for area code)",
     "formEmail": "Please enter a valid email address",
     "formMessage": "Message cannot be empty",
-    "formMessageTooShort": "Your message must be at least 5 characters",
+    "formMessageTooShort": "Please enter a longer message",
     "submitSuccessTitle": "Submission Successful",
     "submitSuccessContent": "I will check your message, thank you for your message."
   },

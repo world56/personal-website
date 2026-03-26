@@ -30,7 +30,7 @@
     "formPhone": "請輸入有效的電話號碼（區號用-隔開）",
     "formEmail": "請輸入有效的郵箱地址",
     "formMessage": "留言不得為空",
-    "formMessageTooShort": "您的留言不得少於5位字符",
+    "formMessageTooShort": "再多寫幾個字吧",
     "submitSuccessTitle": "發送留言成功",
     "submitSuccessContent": "我會查看您的留言訊息，感謝您的留言"
   },
