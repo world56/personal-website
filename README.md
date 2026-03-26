@@ -18,8 +18,9 @@
 
 ## ✨ 技术栈
 
-- 🍔 **Next.JS** (App Router)
+- 🍔 **Next.JS** (Actions)
 - 🥪 **TypeScript**
+- 📦 **React Query**
 - 🧑‍🎨 **Tailwind CSS** (shadcn/ui)
 - 🍟 **Prisma** (MySQL)
 
@@ -83,9 +84,7 @@ $ npx prisma db push
 $ npm run dev
 ```
 
-## 🧑‍💼 生产部署 Production
-
-### 🐳 Docker
+## 🐳 生产部署 Production
 
 #### 1.拉取镜像
 
@@ -105,36 +104,6 @@ $ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e 
 
 ---
 
-### 🕷️PM2
-
-<p><a href='https://github.com/Unitech/pm2'>PM2</a >是NodeJS应用生产环境进程管理器，可在生产环境中管理并维持Node应用运行。</p >
-
-<p><b>构建准备</b>：NodeJS版本号<b>v20.9.0</b>，配置<b>.env</b>相关变量，全局安装 <a href='https://github.com/Unitech/pm2'><b>PM2</b></a >。</p >
-
-<p><b>警告‼️</b>：resource 目录用于托管静态资源，<b>构建时，会先删除之前的build目录，在生成新的build目录，这会导致build目录下的resource目录重新生成</b>。若您要坚持自己手动部署，可先在本地构建，然后在上传服务器部署。</p >
-
-```bash
-# 1.生成 Prisma Client（仅需执行一次）
-$ npx prisma generate
-
-# 2.创建、关联数据库表（仅需执行一次）
-$ npx prisma db push
-
-# 3.编译构建
-$ npm run build
-
-# 4.打开build文件夹（编译后的输出文件）
-$ cd build
-
-# 5.通过pm2启动并托管
-$ pm2 start pm2.json
-
-# 6.查看pm2托管应用存活状态
-$ pm2 ls
-```
-
----
-
 ### 🙋‍♂️ 关于 Nginx
 
 <p>若使用 Nginx 进行代理，请<b>务必添加下列参数</b>。</p >
@@ -144,22 +113,20 @@ $ pm2 ls
 server {
  ...
  location / {
-  proxy_set_header X-Real-IP $remote_addr; # “访问日志”功能
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; # “访问日志”功能
-  proxy_pass http://127.0.0.1:8001;  # website服务端口
- }
-
- location /api/auth/upload {
-  client_max_body_size 32M; # “上传资源”功能
-  proxy_pass http://127.0.0.1:8001; # website服务端口
+   proxy_pass http://127.0.0.1:3000; # website服务端口
+   proxy_set_header Host              $host; 
+   proxy_set_header X-Real-IP         $remote_addr;
+   proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+   proxy_set_header X-Forwarded-Proto $scheme;
+   proxy_set_header X-Forwarded-Host  $host;
  }
 }
 
 ```
 
 ## 🚀 迁移升级
-仍在使用1.3.0以下版本号的用户，若升级至1.3.0及以上版本，需要手动执行[SQL文件](./upgrade/post_type.sql)。此次升级修改了post表type字段类型，为未来应用可扩展做好准备。
 
+仍在使用1.3.0以下版本号的用户，若升级至1.3.0及以上版本，需要手动执行[SQL文件](./scripts/sql/post_type.sql)。此次升级修改了post表type字段类型，为未来应用可扩展做好准备。
 
 ## 🔍 访问地址（例）
 

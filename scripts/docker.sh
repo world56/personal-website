@@ -10,7 +10,7 @@ else
   echo "Warning: Container initialization, ready for building."
   echo ""
   echo "Warning: If migrating to version v1.3.0 or higher, it is necessary to manually execute the SQL file."
-  echo "https://github.com/world56/personal-website/blob/main/upgrade/post_type.sql"
+  echo "https://github.com/world56/personal-website/blob/main/scripts/sql/post_type.sql"
   echo ""
   echo ""
 

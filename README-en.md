@@ -18,8 +18,9 @@ English · [中文](./README.md)
 
 ## ✨ Tech Stack
 
-- 🍔 **Next.JS** (App Router)
+- 🍔 **Next.JS** (Actions)
 - 🥪 **TypeScript**
+- 📦 **React Query**
 - 🧑‍🎨 **Tailwind CSS** (shadcn/ui)
 - 🍟 **Prisma** (MySQL)
 
@@ -83,9 +84,7 @@ $ npx prisma db push
 $ npm run dev
 ```
 
-## 🧑‍💼 Production Deployment
-
-### 🐳 Docker
+## 🐳 Production Deployment
 
 #### 1. Pull the Image
 
@@ -102,59 +101,29 @@ $ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e 
 
 ---
 
-### 🕷️ PM2
-
-<p><a href='https://github.com/Unitech/pm2'>PM2</a> is a production process manager for NodeJS applications, ensuring stability and uptime.</p>
-
-<p><b>Preparation</b>: NodeJS version <b>v20.9.0</b>. Configure <b>.env</b> variables and install <a href='https://github.com/Unitech/pm2'><b>PM2</b></a> globally.</p>
-
-<p><b>Warning‼️</b>: The resource directory hosts static files. <b>During build, the existing build directory is deleted and regenerated, which will reset the resource directory.</b> If you prefer manual deployment, build locally before uploading to the server.</p>
-
-```bash
-# 1. Generate Prisma Client (only needed once)
-$ npx prisma generate
-
-# 2. Create and associate database tables (only needed once)
-$ npx prisma db push
-
-# 3. Build the project
-$ npm run build
-
-# 4. Navigate to the build folder
-$ cd build
-
-# 5. Start and manage with PM2
-$ pm2 start pm2.json
-
-# 6. Check PM2 application status
-$ pm2 ls
-```
-
----
-
 ### 🙋‍♂️ Nginx Configuration
 
 <p>If using Nginx as a proxy, <b>please add the following parameters.</b></p>
 
 ```bash
+
 server {
  ...
  location / {
-  proxy_set_header X-Real-IP $remote_addr; # Visitor logs
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; # Visitor logs
-  proxy_pass http://127.0.0.1:8001;  # Website service port
- }
-
- location /api/auth/upload {
-  client_max_body_size 32M; # Upload resource limit
-  proxy_pass http://127.0.0.1:8001; # Website service port
+   proxy_pass http://127.0.0.1:3000; # website服务端口
+   proxy_set_header Host              $host; 
+   proxy_set_header X-Real-IP         $remote_addr;
+   proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+   proxy_set_header X-Forwarded-Proto $scheme;
+   proxy_set_header X-Forwarded-Host  $host;
  }
 }
+
 ```
 
 ## 🚀 Migration & Upgrades
 
-Users still using versions below 1.3.0 need to manually execute the [SQL file](./upgrade/post_type.sql)  
+Users still using versions below 1.3.0 need to manually execute the [SQL file](./scripts/sql/post_type.sql)  
 when upgrading to version 1.3.0 or later.  This upgrade modifies the `type` field in the `post` table to improve future application scalability.
 
 
