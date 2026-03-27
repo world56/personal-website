@@ -153,4 +153,14 @@ export namespace TypeCommon {
    * @name Valueof 取对象的value
    */
   export type ValueOf<T> = T[keyof T];
+
+  /**
+   * @name FileDTO 上传资源
+   */
+  export interface FileDTO {
+    name: string;
+    path: string;
+    size: number;
+    type: number;
+  }
 }

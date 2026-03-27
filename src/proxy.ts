@@ -1,5 +1,5 @@
 import { jwtVerify } from "jose";
-import { writelog } from "./lib/auth";
+import { writeLog } from "./lib/auth";
 import { getClientIP } from "./lib/utils";
 import { NextResponse } from "next/server";
 
@@ -9,7 +9,7 @@ import { TOKEN_NAME } from "./config/common";
 import type { NextRequest } from "next/server";
 
 export const config = {
-  matcher: ["/console/:path*", "/lib/welcome"],
+  matcher: ["/console/:path*", "/api/auth/:path*", "/lib/welcome"],
 };
 
 /**
@@ -29,13 +29,13 @@ export async function proxy(request: NextRequest) {
   const key = process.env.SECRET;
   const ip = getClientIP(headers);
   if (pathname === "/lib/welcome") {
-    writelog({ key, ip, type: ENUM_COMMON.LOG.ACCESS });
+    writeLog({ key, ip, type: ENUM_COMMON.LOG.ACCESS });
     return NextResponse.next();
   }
   try {
     const token = cookies.get(TOKEN_NAME)?.value;
     if (!token) {
-      writelog({ ip, desc: pathname });
+      writeLog({ ip, desc: pathname });
       throw new Error("No token");
     }
     await jwtVerify(token, new TextEncoder().encode(key));

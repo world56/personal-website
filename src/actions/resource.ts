@@ -1,13 +1,8 @@
 "use server";
 
-import sharp from "sharp";
-import * as uuid from "uuid";
-import { stat } from "fs/promises";
 import { isVoid } from "@/lib/utils";
-import { writeFile } from "fs/promises";
 import { authAction } from "@/lib/auth";
 import { DBlocal, prisma } from "@/lib/db";
-import { getFileType } from "@/lib/filter";
 
 import { SortOrder } from "generated/prisma/internal/prismaNamespace";
 
@@ -44,7 +39,7 @@ export const getResources = authAction(
 );
 
 /**
- * @name deleteResoruce 删除资源
+ * @name deleteResource 删除资源
  */
 export const deleteResource = authAction(
   async ({ id }: Pick<Resource, "id">) => {
@@ -56,25 +51,3 @@ export const deleteResource = authAction(
     return true;
   },
 );
-
-/**
- * @name upload 上传资源
- */
-export const upload = authAction(async (formData: FormData) => {
-  const file = formData.get("file") as File;
-  let suffix = file.name.split(".").at(-1)?.toLocaleLowerCase();
-  if (!suffix) return Promise.reject("Missing file extension");
-  let buffer = Buffer.from(new Uint8Array(await file.arrayBuffer())) as Buffer;
-  if (["jpg", "jpeg", "png"].includes(suffix)) {
-    buffer = await sharp(buffer).webp().toBuffer();
-    suffix = "webp";
-  }
-  const { name } = file;
-  const path = `${uuid.v1()}.${suffix}`;
-  const filePath = `${DBlocal.FOLDER_PATH}/${path}`;
-  await writeFile(filePath, new Uint8Array(buffer));
-  const { size } = await stat(filePath);
-  const type = getFileType(name);
-  await prisma.resource.create({ data: { name, path, size, type } });
-  return { name, path, size, type };
-});

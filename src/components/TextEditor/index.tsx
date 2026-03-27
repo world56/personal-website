@@ -3,12 +3,11 @@ import Script from "next/script";
 import Loading from "../Loading";
 import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
-import { upload } from "@/actions/resource";
 import { loadStylesheet } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import { getTinymceLanguage } from "@/lib/language";
 import { useQueryClient } from "@tanstack/react-query";
-import { getFileType, getUploadFiles } from "@/lib/filter";
+import { upload, getFileType, getUploadFiles } from "@/lib/file";
 
 import CONFIG from "./config";
 import TEMPLATE from "./template";

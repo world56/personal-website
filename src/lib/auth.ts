@@ -36,7 +36,7 @@ async function log(type: ENUM_COMMON.LOG, description?: string) {
   return prisma.log.create({ data: { ip, type, description } });
 }
 
-export async function writelog(params: object) {
+export async function writeLog(params: object) {
   let query = new URLSearchParams(
     Object.fromEntries(Object.entries(params).filter(([_k, v]) => !isVoid(v))),
   ).toString();

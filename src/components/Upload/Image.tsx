@@ -1,8 +1,8 @@
+import { toast } from "sonner";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { upload } from "@/actions/resource";
 import { useState, forwardRef } from "react";
-import { getUploadFiles } from "@/lib/filter";
+import { getUploadFiles, upload } from "@/lib/file";
 import { useQueryClient } from "@tanstack/react-query";
 import { CameraFilled, LoadingOutlined } from "@ant-design/icons";
 
@@ -42,7 +42,7 @@ const UploadImage: TypeUploadImageRefProps = (
   },
   ref,
 ) => {
-  const t = useTranslations("common");
+  const t = useTranslations();
 
   const queryClient = useQueryClient();
 
@@ -60,6 +60,9 @@ const UploadImage: TypeUploadImageRefProps = (
       updateValue(path);
       setLoad(false);
     } catch (error) {
+      toast.message(t("textEditor.uploadError"), {
+        description: t("hint.error"),
+      });
       setLoad(false);
     }
   }
@@ -113,7 +116,7 @@ const UploadImage: TypeUploadImageRefProps = (
           {load ? <LoadingOutlined /> : <CameraFilled />}
           {STYLE?.NAME ? (
             <span className={`mt-1 ${STYLE.NAME}`}>
-              {load ? t("upLoading") : t("lickUpload")}
+              {load ? t("common.upLoading") : t("common.lickUpload")}
             </span>
           ) : null}
         </>
