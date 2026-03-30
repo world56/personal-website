@@ -3,24 +3,28 @@ import createNextIntlPlugin from "next-intl/plugin";
 import type { NextConfig } from "next";
 
 function serverActionsAllowedOrigins() {
-  const fromEnv = process.env.SERVER_ACTIONS_ALLOWED_ORIGINS;
-  if (fromEnv?.trim()) {
-    return fromEnv
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-  }
-  const site = process.env.NEXT_PUBLIC_SITE_URL;
-  if (site?.trim()) {
+  const source =
+    process.env.SERVER_ACTIONS_ALLOWED_ORIGINS?.trim() ||
+    process.env.SITE_URL?.trim();
+  if (!source) return [];
+
+  const toHost = (value: string): string | null => {
     try {
-      const host = new URL(site.startsWith("http") ? site : `https://${site}`)
-        .hostname;
-      return host ? [host] : [];
+      const url = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+      return new URL(url).host || null;
     } catch {
-      return [];
+      return null;
     }
-  }
-  return [];
+  };
+
+  return [
+    ...new Set(
+      source
+        .split(",")
+        .map((v) => toHost(v.trim()))
+        .filter(Boolean),
+    ),
+  ] as string[];
 }
 
 const allowedOrigins = serverActionsAllowedOrigins();
