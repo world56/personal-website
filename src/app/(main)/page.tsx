@@ -8,6 +8,12 @@ import { getPersonInfo } from "@/components/Personal";
 import { ENUM_COMMON } from "@/enum/common";
 import { API_RESOURCE } from "@/config/common";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
+
 const Page = async () => {
   const t = await getTranslations("main");
 

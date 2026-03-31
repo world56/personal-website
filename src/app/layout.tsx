@@ -2,6 +2,7 @@ import "./global.css";
 import "./global.sass";
 import Script from "next/script";
 import { DBlocal } from "@/lib/db";
+import { getSiteOrigin } from "@/lib/origin";
 import { Toaster } from "@/components/ui/sonner";
 import { NextIntlClientProvider } from "next-intl";
 import ThemeProvider from "@/components/ThemeProvider";
@@ -16,6 +17,7 @@ export async function generateMetadata() {
   return {
     title: config.title,
     description: config.description,
+    metadataBase: new URL(getSiteOrigin()),
     icons: config.favicon ? { icon: favicon, apple: favicon } : undefined,
   };
 }

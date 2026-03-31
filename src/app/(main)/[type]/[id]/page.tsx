@@ -28,6 +28,7 @@ import { ENUM_COMMON } from "@/enum/common";
 import { POST_PATH, POST_TYPE } from "@/config/common";
 
 import type { Post } from "model";
+import type { Metadata } from "next";
 
 interface TypePostProps {
   params: Promise<{
@@ -94,12 +95,16 @@ const requestPost = (id: number, type: number) => {
     : null;
 };
 
-export async function generateMetadata({ params }: TypePostProps) {
+export async function generateMetadata({
+  params,
+}: TypePostProps): Promise<Metadata> {
   const { id, type } = await params;
   const res = await requestPost(id, POST_TYPE[type]);
+  const canonical = res ? `/${type}/${id}` : undefined;
   return {
     title: res?.title ? res.title : "Not found",
     description: res?.description,
+    alternates: canonical ? { canonical } : undefined,
   };
 }
 
