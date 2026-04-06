@@ -1,9 +1,11 @@
 "use server";
 
+import type { z } from "zod";
 import { headers } from "next/headers";
 import { authAction } from "@/lib/auth";
 import { getClientIP } from "@/lib/utils";
 import { prisma, cacheable } from "@/lib/db";
+import { messageSchema } from "@/schema/message";
 
 import type { Message } from "model";
 import type { TypeCommon } from "@/interface/common";
@@ -46,10 +48,13 @@ export const getMessages = authAction(
  * @name insertMessage 提交一条留言
  */
 export async function insertMessage(
-  data: Omit<Message, "id" | "read" | "createTime" | "email"> & {
-    email?: string;
-  },
+  data: z.infer<typeof messageSchema>,
 ) {
+  const result = messageSchema.safeParse(data);
+  if (!result.success) {
+    return Promise.reject(400);
+  }
+
   const header = await headers();
   const ip = getClientIP(header);
   const bol = await cacheable.incr({
@@ -58,7 +63,7 @@ export async function insertMessage(
     key: `msg_${ip}`,
   });
   if (!bol) return Promise.reject(429);
-  await prisma.message.create({ data });
+  await prisma.message.create({ data: result.data });
   return true;
 }
 

@@ -21,30 +21,22 @@ import { SendOutlined } from "@ant-design/icons";
 import { insertMessage } from "@/actions/message";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { REG_RULES } from "@/config/rules";
+import { createMessageSchema } from "@/schema/message";
 
 function Contact() {
   const t = useTranslations("message");
 
   const [load, setLoad] = useState(false);
 
-  const schema = z.object({
-    name: z
-      .string({ message: t("formNameNotEmpty") })
-      .min(2, { message: t("formNameTooShort") })
-      .max(20, { message: t("formNameTooLong") }),
-    telephone: z.string().refine((v) => !v || REG_RULES.PHONE_NUMBER.test(v), {
-      message: t("formPhone"),
-    }),
-    email: z
-      .email({ message: t("formEmail") })
-      .or(z.literal(""))
-      .optional(),
-    content: z
-      .string({ message: t("formMessage") })
-      .min(5, { message: t("formMessageTooShort") })
-      .max(500, { message: t("formMessageTooLong") }),
+  const schema = createMessageSchema({
+    formNameNotEmpty: t("formNameNotEmpty"),
+    formNameTooShort: t("formNameTooShort"),
+    formNameTooLong: t("formNameTooLong"),
+    formPhone: t("formPhone"),
+    formEmail: t("formEmail"),
+    formMessage: t("formMessage"),
+    formMessageTooShort: t("formMessageTooShort"),
+    formMessageTooLong: t("formMessageTooLong"),
   });
 
   const form = useForm<z.infer<typeof schema>>({
