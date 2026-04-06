@@ -9,7 +9,7 @@ interface TypeConsoleProps {
 const Layout: React.FC<TypeConsoleProps> = ({ children }) => (
   <>
     <NavbaNavigationr />
-    <main className="md:ml-63.5 md:mt-14 ml-auto mb-5 mr-0 w-5xl relative">
+    <main className="md:ml-64.5 md:mt-14 ml-auto mb-5 mr-0 w-5xl relative">
       {children}
     </main>
     <Script src="/lib/tinymce/tinymce.min.js" />

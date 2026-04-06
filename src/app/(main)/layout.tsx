@@ -13,7 +13,7 @@ const Layout: React.FC<TypeMainProps> = ({ children }) => {
   return (
     <>
       <Personal />
-      <main className="md:ml-78.5 md:w-240 md:mt-14 mr-0! relative">
+      <main className="md:ml-78.5 md:w-242 md:mt-14 mr-0! relative">
         <NavbaNavigationr />
         {children}
       </main>
