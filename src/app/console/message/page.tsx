@@ -91,8 +91,9 @@ const Contact = () => {
       header: t("messages.leaverMessage"),
       cell: ({ row }) => (
         <Tooltip
+          maxWidth="15rem"
+          className="truncate"
           title={row.original.name}
-          className="truncate w-full text-left inline py-2 px-1"
         >
           {row.original.name}
         </Tooltip>
@@ -102,10 +103,7 @@ const Contact = () => {
       accessorKey: "content",
       header: t("messages.information"),
       cell: ({ row }) => (
-        <Tooltip
-          title={row.original.content}
-          className="truncate w-full text-left inline py-2 px-1"
-        >
+        <Tooltip className="w-71.25 truncate" title={row.original.content}>
           {row.original.content}
         </Tooltip>
       ),

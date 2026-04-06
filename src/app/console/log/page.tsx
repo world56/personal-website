@@ -107,6 +107,7 @@ const Log = () => {
   const columns: ColumnDef<Log>[] = [
     {
       accessorKey: "ip",
+      size: 90,
       header: () => (
         <Tooltip title={t("IPDesc")}>
           IP <QuestionCircleOutlined className="ml-1" />
@@ -116,16 +117,17 @@ const Log = () => {
     },
     {
       accessorKey: "description",
-      size: 80,
       header: t("desc"),
       cell: ({ row }) => (
-        <p className="text-center">{row.original.description}</p>
+        <Tooltip className="w-81.5 truncate" title={row.original.description}>
+          {row.original.description}
+        </Tooltip>
       ),
     },
     {
       accessorKey: "type",
       header: t("type"),
-      size: 80,
+      size: 60,
       cell: ({ row }) => (
         <p className="text-center">
           {LOG_NAME[row.original.type as ENUM_COMMON.LOG]}
@@ -135,7 +137,7 @@ const Log = () => {
     {
       accessorKey: "createTime",
       header: t("createTime"),
-      size: 100,
+      size: 80,
       cell: ({ row }) => (
         <p className="text-center py-2">
           {dateToTime(row.original.createTime)}

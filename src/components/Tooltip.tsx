@@ -9,6 +9,10 @@ interface TypeTooltipProps {
   onClick?(): void;
   className?: string;
   disabled?: boolean;
+  /**
+   * @param maxWidth 更好的兼容 Safari
+   */
+  maxWidth?: number | string;
   children?: React.ReactNode;
   title?: string | React.ReactNode;
 }
@@ -20,6 +24,7 @@ const Tooltip: React.FC<TypeTooltipProps> = ({
   disabled,
   children,
   className = "",
+  maxWidth = "28rem",
 }) => {
   function getButtonClass() {
     if (type === "button") {
@@ -35,12 +40,20 @@ const Tooltip: React.FC<TypeTooltipProps> = ({
   return (
     <Layout>
       <TooltipTrigger
+        style={{ maxWidth }}
         onClick={disabled ? undefined : onClick}
-        className={`${getButtonClass()} ${className}`}
+        className={`${getButtonClass()} truncate ${className}`}
       >
         {children}
-        {title ? <TooltipContent>{title}</TooltipContent> : null}
       </TooltipTrigger>
+      {title ? (
+        <TooltipContent
+          style={{ maxWidth }}
+          className="overflow-hidden whitespace-normal text-wrap wrap-break-word"
+        >
+          {title}
+        </TooltipContent>
+      ) : null}
     </Layout>
   );
 };

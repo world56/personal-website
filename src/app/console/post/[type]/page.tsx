@@ -86,8 +86,9 @@ const Posts = () => {
       size: 265,
       cell: ({ row }) => (
         <Tooltip
+          maxWidth="29rem"
+          className="text-left"
           title={row.original.title}
-          className="truncate py-2 px-1 w-full text-left"
         >
           {row.original.title}
         </Tooltip>

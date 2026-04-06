@@ -58,8 +58,8 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name }) => {
           className="w-full flex items-center justify-center"
           title={
             <>
-              <p>{t("iconRemark")}</p>
-              <p>{t("iconRemarkDesc")}</p>
+              <p className="text-center">{t("iconRemark")}</p>
+              <p className="text-center">{t("iconRemarkDesc")}</p>
             </>
           }
         >
@@ -138,8 +138,8 @@ const TableEdit: React.FC<TypeTableEditProps> = ({ name }) => {
           className="w-full flex items-center justify-center"
           title={
             <>
-              <p>{t("linkHint")}</p>
-              <p>{t("linkHintContent")}</p>
+              <p className="text-center">{t("linkHint")}</p>
+              <p className="text-center">{t("linkHintContent")}</p>
             </>
           }
         >

@@ -98,8 +98,9 @@ const Resoruce = () => {
       header: t("name"),
       cell: ({ row }) => (
         <Tooltip
+          maxWidth="23.625rem"
+          className="text-left"
           title={row.original.name}
-          className="truncate py-2 px-1 w-full text-left"
         >
           {row.original.name}
         </Tooltip>
