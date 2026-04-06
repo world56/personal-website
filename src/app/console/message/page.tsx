@@ -142,11 +142,7 @@ const Contact = () => {
       size: 80,
       cell: ({ row }) => (
         <div className="flex justify-center">
-          <Button
-            variant="link"
-            className="p-"
-            onClick={() => setMessage(row.original)}
-          >
+          <Button variant="link" onClick={() => setMessage(row.original)}>
             {t("common.preview")}
           </Button>
           <Button
