@@ -32,7 +32,8 @@ function Contact() {
   const schema = z.object({
     name: z
       .string({ message: t("formNameNotEmpty") })
-      .min(2, { message: t("formNameTooShort") }),
+      .min(2, { message: t("formNameTooShort") })
+      .max(20, { message: t("formNameTooLong") }),
     telephone: z.string().refine((v) => !v || REG_RULES.PHONE_NUMBER.test(v), {
       message: t("formPhone"),
     }),
@@ -42,7 +43,8 @@ function Contact() {
       .optional(),
     content: z
       .string({ message: t("formMessage") })
-      .min(5, { message: t("formMessageTooShort") }),
+      .min(5, { message: t("formMessageTooShort") })
+      .max(500, { message: t("formMessageTooLong") }),
   });
 
   const form = useForm<z.infer<typeof schema>>({

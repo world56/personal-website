@@ -27,10 +27,12 @@
     "submit": "提交留言",
     "formNameNotEmpty": "您的尊称不得为空",
     "formNameTooShort": "您的尊称不得少于2位字符",
+    "formNameTooLong": "您的尊称不得多于20位字符",
     "formPhone": "请输入有效的电话号码（区号用-隔开）",
     "formEmail": "请输入有效的邮箱地址",
     "formMessage": "留言不得为空",
     "formMessageTooShort": "再多写几个字吧",
+    "formMessageTooLong": "留言不得多于500位字符",
     "submitSuccessTitle": "提交成功",
     "submitSuccessContent": "我会查看到您的留言消息，感谢您的留言"
   },
