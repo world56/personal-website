@@ -1,9 +1,9 @@
 "use server";
 
-import { authAction } from "@/lib/auth";
 import { filterCUD } from "@/lib/filter";
 import { DBlocal, prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { authAction, log } from "@/lib/auth";
 import { checkLanguage } from "@/lib/language";
 
 import { ENUM_COMMON } from "@/enum/common";
@@ -109,15 +109,11 @@ export const updatePassword = authAction(
         where: { id: admin.id },
         data: { password: newPassword },
       });
-      await prisma.log.create({
-        data: { type: ENUM_COMMON.LOG.PASSWORD, description: "200" },
-      });
+      await log(ENUM_COMMON.LOG.PASSWORD, "200");
       return true;
     } else {
-      await prisma.log.create({
-        data: { type: ENUM_COMMON.LOG.PASSWORD, description: "400" },
-      });
-      return Promise.reject(false);
+      await log(ENUM_COMMON.LOG.PASSWORD, "400");
+      return Promise.reject("400");
     }
   },
 );

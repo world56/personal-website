@@ -30,7 +30,7 @@ export function authAction<P extends unknown[], R>(
   };
 }
 
-async function log(type: ENUM_COMMON.LOG, description?: string) {
+export async function log(type: ENUM_COMMON.LOG, description?: string) {
   const header = await headers();
   const ip = getClientIP(header);
   return prisma.log.create({ data: { ip, type, description } });

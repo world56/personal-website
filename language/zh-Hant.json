@@ -208,6 +208,7 @@
     "confirmPwdDesc": "輸入新密碼進行二次確認",
     "confirmPwdError": "二次確認密碼錯誤，請檢查後重試",
     "success": "修改登錄密碼成功",
+    "failed": "修改登入密碼失敗，請檢查後重試",
     "submit": "更新密碼"
   },
   "language": {

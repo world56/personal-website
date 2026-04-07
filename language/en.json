@@ -208,6 +208,7 @@
     "confirmPwdDesc": "Re-enter the new password for confirmation",
     "confirmPwdError": "Confirmation password error, please check and try again",
     "success": "Login password changed successfully",
+    "failed": "Failed to change login password. Please check and try again",
     "submit": "Update Password"
   },
   "language": {

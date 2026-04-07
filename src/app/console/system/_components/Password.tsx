@@ -13,15 +13,18 @@ import md5 from "md5";
 import { z } from "zod";
 import { toast } from "sonner";
 import Card from "@/components/Card";
-import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useForm, useWatch } from "react-hook-form";
 import { updatePassword } from "@/actions/settings";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Password = () => {
   const t = useTranslations("password");
+
+  const queryClient = useQueryClient();
 
   const CHECK_PWD = z
     .string()
@@ -45,14 +48,22 @@ const Password = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    await updatePassword({
-      password: md5(values.password),
-      newPassword: md5(values.newPassword),
-    });
-    toast.success(t("success"));
+    try {
+      await updatePassword({
+        password: md5(values.password),
+        newPassword: md5(values.newPassword),
+      });
+      form.reset();
+      toast.success(t("success"));
+    } catch (e) {
+      toast.error(t("failed"));
+      console.log(e);
+    } finally {
+      queryClient.invalidateQueries({ queryKey: ["logs"] });
+    }
   }
 
-  const pwd = form.getValues("newPassword");
+  const pwd = useWatch({ control: form.control, name: "newPassword" });
 
   return (
     <Form {...form}>
