@@ -42,7 +42,7 @@ const Tooltip: React.FC<TypeTooltipProps> = ({
       <TooltipTrigger
         style={{ maxWidth }}
         onClick={disabled ? undefined : onClick}
-        className={`${getButtonClass()} truncate ${className}`}
+        className={`${getButtonClass()} truncate select-text cursor-text ${className}`}
       >
         {children}
       </TooltipTrigger>
