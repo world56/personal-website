@@ -133,11 +133,11 @@ server {
 
 ## 🚀 迁移升级
 
-### v1.3.0
-升级至 1.3.0 及以上版本，需要手动执行[SQL文件](./scripts/sql/post_type.sql)。此次升级修改了post表type字段类型，为未来应用可扩展做好准备。
+#### v1.3.0
+升级至 1.3.0 及以上版本，需要手动执行[SQL文件](./scripts/sql/post_type.sql)（提升可扩展性）。
 
-### v2.0.0
-升级至 2.0.0 及以上版本，需参考上述Nginx配置（适配 Server Actions）。
+#### v2.0.0
+升级至 2.0.0 及以上版本，需参考上述[Nginx配置](./scripts/nginx/server_actions.conf)（适配 Server Actions）。
 
 ## 🔍 访问地址（例）
 

@@ -133,11 +133,11 @@ server {
 
 ## 🚀 Migration & Upgrade
 
-### v1.3.0
-When upgrading to 1.3.0 or above, you need to manually execute the [SQL file](./scripts/sql/post_type.sql). This upgrade changes the `type` field type in the `post` table to prepare for future scalability.
+#### v1.3.0
+When upgrading to 1.3.0 or above, you need to manually execute the [SQL file](./scripts/sql/post_type.sql) (for better scalability).
 
-### v2.0.0
-When upgrading to 2.0.0 or above, refer to the Nginx configuration above (for Server Actions compatibility).
+#### v2.0.0
+When upgrading to 2.0.0 or above, refer to the [Nginx configuration](./scripts/nginx/server_actions.conf) above (for Server Actions compatibility).
 
 ## 🔍 Access URLs (Example)
 
