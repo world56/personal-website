@@ -50,8 +50,8 @@
 - 🙋‍♂️ **后台管理**  
   网站信息、个人信息编辑，内容管理、留言管理、静态资源管理等[相关功能](https://github.com/world56/static/tree/main/website#-%E6%95%88%E6%9E%9C%E5%9B%BE%E9%A2%84%E8%A7%88)
 
-- 🤩 **访客日志**  
-  访客日志功能，帮助您了解访客的访问频率。
+- 🤩 **访问日志**  
+  访问日志功能，帮助您了解访客的访问频率、识别恶意请求。
 
 - 🐳 **Docker**  
   支持 docker 多个镜像源，一键部署，降低心智负担
@@ -70,6 +70,9 @@ SECRET = your_key
 # zh-Hant 繁體中文
 # en      English
 LANG = zh-Hans
+
+# 站点对外访问的根地址（用于生成 robots.txt / sitemap.xml 的绝对链接，提升SEO效率）
+SITE_URL = https://your_website.com
 ```
 
 ## 👷 本地开发 Development
@@ -99,7 +102,7 @@ $ docker pull registry.cn-hangzhou.aliyuncs.com/world56/website
 
 ```bash
 # 静态资源托管在/app/resource目录，请绑定数据卷（-v），防止资源丢失。
-$ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e SECRET=your_key -e LANG=zh-Hans -v ~/app/website/resource:/app/resource world56/website
+$ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e SECRET=your_key -e LANG=zh-Hans -e SITE_URL=https://your_website.com -v ~/app/website/resource:/app/resource world56/website
 ```
 
 ---
@@ -113,12 +116,16 @@ $ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e 
 server {
  ...
  location / {
-   proxy_pass http://127.0.0.1:3000; # website服务端口
-   proxy_set_header Host              $host; 
-   proxy_set_header X-Real-IP         $remote_addr;
-   proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-   proxy_set_header X-Forwarded-Proto $scheme;
-   proxy_set_header X-Forwarded-Host  $host;
+   proxy_pass http://127.0.0.1:3000; # website服务端口（自定义）
+   proxy_set_header Host              $host;  # “Server Actions” 功能
+   proxy_set_header X-Forwarded-Proto $scheme; # “Server Actions” 功能
+   proxy_set_header X-Real-IP         $remote_addr; # “日志管理” 功能
+   proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for; # “日志管理” 功能
+ }
+
+ location /api/auth/upload {
+  client_max_body_size 21M; # “上传资源” 功能
+  proxy_pass http://127.0.0.1:3000; # website服务端口（自定义）
  }
 }
 
@@ -126,7 +133,11 @@ server {
 
 ## 🚀 迁移升级
 
-仍在使用1.3.0以下版本号的用户，若升级至1.3.0及以上版本，需要手动执行[SQL文件](./scripts/sql/post_type.sql)。此次升级修改了post表type字段类型，为未来应用可扩展做好准备。
+### v1.3.0
+升级至 1.3.0 及以上版本，需要手动执行[SQL文件](./scripts/sql/post_type.sql)。此次升级修改了post表type字段类型，为未来应用可扩展做好准备。
+
+### v2.0.0
+升级至 2.0.0 及以上版本，需参考上述Nginx配置（适配 Server Actions）。
 
 ## 🔍 访问地址（例）
 
