@@ -1,83 +1,70 @@
-"use client";
-
-import {
-  useRef,
-  useState,
-  useEffect,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
 import { toast } from "sonner";
 import Script from "next/script";
-import template from "./template";
-import { CONFIG } from "./config";
+import Loading from "../Loading";
 import { useTheme } from "next-themes";
-import { uploadFile } from "@/app/api";
-import Loading from "@/components/Loading";
 import { useTranslations } from "next-intl";
 import { loadStylesheet } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
 import { getTinymceLanguage } from "@/lib/language";
-import { useDebounceFn, useDebounceEffect } from "ahooks";
-import { getFileType, getUploadFiles } from "@/lib/filter";
+import { useQueryClient } from "@tanstack/react-query";
+import { upload, getFileType, getUploadFiles } from "@/lib/file";
 
+import CONFIG from "./config";
+import TEMPLATE from "./template";
 import { ENUM_COMMON } from "@/enum/common";
 
 import type { Editor } from "tinymce";
 
-interface TypeTxtEditorProps<T = string>
-  extends React.ForwardRefRenderFunction<
-    Editor | undefined,
-    {
-      /**
-       * @param height 编辑器高度
-       */
-      height?: number;
-      /**
-       * @param value 文本内容
-       */
-      value?: string;
-      /**
-       * @name onChange 内容监听器
-       */
-      onChange?(value?: T): void;
-    }
-  > {}
+interface TypeTxtEditorProps<T = string> {
+  /**
+   * @param height 编辑器高度
+   */
+  height?: number;
+  /**
+   * @param value 文本内容
+   */
+  value?: string;
+  /**
+   * @name onChange 内容监听器
+   */
+  onChange?(value?: T): void;
+}
 
-/**
- * @name TextEditor 文本编辑器
- */
-const TxtEditor: TypeTxtEditorProps = (
-  { height = 780, value = "", onChange },
-  ref,
-) => {
+const TextEditor: React.FC<TypeTxtEditorProps> = ({
+  onChange,
+  value = "",
+  height = 780,
+}) => {
+  const { systemTheme } = useTheme();
   const t = useTranslations("textEditor");
 
-  const edit = useRef<Editor>();
+  const queryClient = useQueryClient();
 
-  const { systemTheme } = useTheme();
-  const IS_DARK = systemTheme === "dark";
+  const edit = useRef<Editor>(null);
 
-  const [load, setLoad] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const { run: onCreate } = useDebounceFn(() => {
-    window?.tinymce?.init({
+  function onCreate() {
+    window.tinymce?.init({
       ...CONFIG,
       ...getTinymceLanguage(),
       height,
       selector: `#editor`,
-      init_instance_callback: (e) => {
-        edit.current = e;
+      init_instance_callback: (editor) => {
+        edit.current = editor;
         edit.current?.on("change", () =>
           onChange?.(edit.current?.getContent()),
         );
-        setLoad(false);
+        setLoading(false);
       },
       setup(editor) {
-        editor.on("init", () => {
-          const iframe = editor.iframeElement?.contentDocument!;
-          const script = iframe.createElement("script");
-          script.src = `/lib/tinymce/mount/index.js`;
-          iframe!.head.appendChild(script);
+        editor.on("SkinLoaded", () => {
+          const doc = editor.getDoc();
+          if (doc) {
+            const script = doc.createElement("script");
+            script.src = `/lib/tinymce/mount/index.js`;
+            doc.head.appendChild(script);
+          }
         });
         editor.ui.registry.addButton("codetag", {
           icon: "sourcecode",
@@ -87,12 +74,12 @@ const TxtEditor: TypeTxtEditorProps = (
         editor.ui.registry.addButton("title", {
           icon: "permanent-pen",
           tooltip: t("insertTitle"),
-          onAction: () => editor?.insertContent(template.getTitle()),
+          onAction: () => editor?.insertContent(TEMPLATE.getTitle()),
         });
         editor.ui.registry.addButton("upload", {
           icon: "upload",
           tooltip: t("upload"),
-          onAction: () => upload(editor),
+          onAction: () => uploadFile(editor),
         });
         editor.ui.registry.addButton("remove-ele", {
           icon: "remove",
@@ -174,32 +161,33 @@ const TxtEditor: TypeTxtEditorProps = (
         });
       },
     });
-  });
+  }
 
-  async function upload(editor: Editor) {
-    const files = await getUploadFiles({
-      multiple: true,
-      accept: ".svg, .jpg, .jpeg, .png, .webp, .mp4, .mp3, .aac, .m4a",
-    });
+  async function uploadFile(editor: Editor) {
+    const files = await getUploadFiles(
+      ".svg, .jpg, .jpeg, .png, .webp, .mp4, .mp3, .aac, .m4a",
+      true,
+    );
     let num = 0;
     toast.promise(
       async () => {
         let html = "";
         for await (const file of files) {
           try {
-            const { path } = await uploadFile(file);
+            const { path } = await upload(file);
+            queryClient.invalidateQueries({ queryKey: ["resource"] });
             num++;
             const type = getFileType(path);
             const url = `/api/resource/${path}`;
             switch (type) {
               case ENUM_COMMON.RESOURCE.IMAGE:
-                html += template.getImage(url);
+                html += TEMPLATE.getImage(url);
                 break;
               case ENUM_COMMON.RESOURCE.VIDEO:
-                html += template.getVideo(url);
+                html += TEMPLATE.getVideo(url);
                 break;
               case ENUM_COMMON.RESOURCE.AUDIO:
-                html += template.getAudio(url);
+                html += TEMPLATE.getAudio(url);
                 break;
             }
           } catch (error) {
@@ -207,7 +195,7 @@ const TxtEditor: TypeTxtEditorProps = (
           }
         }
         edit?.current?.execCommand("mceInsertContent", false, html);
-        editor.fire("change");
+        editor.dispatch("change");
         return Promise.resolve(files);
       },
       {
@@ -216,6 +204,11 @@ const TxtEditor: TypeTxtEditorProps = (
         success: () => `${num} ${t("uploadSuccess")}`,
       },
     );
+  }
+
+  function changeAlign(editor: Editor, type: "left" | "center" | "right") {
+    editor.dom.setStyle(editor.selection.getNode(), "justify-content", type);
+    editor.dispatch("change");
   }
 
   function changeWidth(editor: Editor, type: "ADD" | "REDUCE") {
@@ -231,52 +224,45 @@ const TxtEditor: TypeTxtEditorProps = (
     }
     const width = `${type === "ADD" ? num + 10 : num - 10}%`;
     editor.dom.setStyle(ele, "width", width);
-    editor.fire("change");
+    editor.dispatch("change");
   }
 
-  function changeAlign(editor: Editor, type: "left" | "center" | "right") {
-    editor.dom.setStyle(editor.selection.getNode(), "justify-content", type);
-    editor.fire("change");
-  }
+  useEffect(() => {
+    if (!loading) {
+      if (edit.current?.getContent() !== value) {
+        let index = edit.current?.selection?.getBookmark?.(2)!;
+        edit.current?.setContent?.(value);
+        edit.current?.selection?.moveToBookmark?.(index);
+      }
+    }
+  }, [loading, value]);
 
   useEffect(() => {
     onCreate();
     return () => {
-      edit.current?.off("change");
-      edit.current && window?.tinymce?.remove();
-    };
-  }, [onCreate]);
-
-  useEffect(() => {
-    if (!load) {
-      if (edit.current?.getContent() !== value) {
-        let index = edit.current?.selection?.getBookmark(2)!;
-        edit.current?.setContent(value);
-        edit.current?.selection?.moveToBookmark?.(index);
+      if (window?.tinymce && edit.current) {
+        window.tinymce?.remove?.(edit.current!);
       }
-    }
-  }, [load, value]);
+    };
+  }, []);
 
-  useDebounceEffect(
+  useEffect(
     () =>
       loadStylesheet(
-        `/lib/tinymce/skins/ui/oxide${IS_DARK ? "-dark" : ""}/skin.min.css`,
+        `/lib/tinymce/skins/ui/oxide${
+          systemTheme === "dark" ? "-dark" : ""
+        }/skin.min.css`,
         "oxide",
       ),
-    [IS_DARK],
-    { wait: 100 },
+    [systemTheme],
   );
 
-  useImperativeHandle(ref, () => edit.current, [edit]);
-
   return (
-    <Loading loading={load}>
+    <Loading>
       <div id="editor" style={{ minHeight: 780 }} />
       <Script onReady={onCreate} src="/lib/tinymce/tinymce.min.js" />
     </Loading>
   );
 };
 
-export { Editor };
-
-export default forwardRef(TxtEditor);
+export default TextEditor;

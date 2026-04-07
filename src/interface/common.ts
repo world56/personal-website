@@ -1,8 +1,9 @@
+import { ENUM_COMMON } from "@/enum/common";
+
 import type { Cacheable } from "cacheable";
 import type { EditorManager } from "tinymce";
-import type { PrismaClient, Msg, Post, Tag } from "@prisma/client";
-
-import { ENUM_COMMON } from "@/enum/common";
+import type { PrismaClient } from "generated/prisma/client";
+import type { Message, Post, Tag } from "model";
 
 declare global {
   interface Window {
@@ -20,7 +21,9 @@ declare global {
   var DBlocal: {
     FOLDER_PATH: string;
     set(data: object): Record<string, string>;
-    get(): Record<string, string | number>;
+    get(): Omit<TypeCommon.ProfileDTO, "items" | "skills"> & {
+      language: string;
+    };
     remove(path: string): boolean;
     language(): string;
   };
@@ -29,10 +32,9 @@ declare global {
 export namespace TypeCommon {
   /**
    * @name TypePrimaryID 主键
-   * @description 本项目全部用uuid
    */
   export interface PrimaryID {
-    id?: string;
+    id?: string | number;
   }
 
   export interface Sign extends Record<"account" | "password", string> {}
@@ -62,34 +64,32 @@ export namespace TypeCommon {
    * @param position 您的岗位
    * @param profile 个人简介
    */
-  export interface BasisDTO<T = Omit<Tag, "id" | "type" | "index">>
-    extends Record<
-      | "icon"
-      | "name"
-      | "title"
-      | "profile"
-      | "favicon"
-      | "position"
-      | "description",
-      string
-    > {
+  export interface ProfileDTO extends Record<
+    | "icon"
+    | "name"
+    | "title"
+    | "profile"
+    | "favicon"
+    | "position"
+    | "description",
+    string
+  > {
     /** @param forTheRecord 网站备案号 */
     forTheRecord?: string;
     /**
      * @param items 用户联系面板
      * @description 固定五个
      */
-    items: T[];
+    items: Tag[];
     /** @param skills 个人技能 */
-    skills: T[];
+    skills: Tag[];
   }
 
   /**
    * @name QueryPosts 查询 “文本” 列表
    */
   export interface QueryPosts
-    extends PageTurning,
-      Partial<Pick<Post, "title" | "status">> {
+    extends PageTurning, Partial<Pick<Post, "title" | "status">> {
     type: ENUM_COMMON.POST_TYPE;
   }
 
@@ -97,7 +97,8 @@ export namespace TypeCommon {
    * @name UpdatePost 编辑 “文本”
    */
   export interface UpdatePost
-    extends Partial<Pick<Post, "id">>,
+    extends
+      Partial<Pick<Post, "id">>,
       Pick<Post, "icon" | "title" | "type" | "content"> {
     footer?: string;
     description?: string;
@@ -112,8 +113,7 @@ export namespace TypeCommon {
    * @name QueryMessages 查询 “消息” 列表
    */
   export interface QueryMessages
-    extends PageTurning,
-      Partial<Pick<Msg, "read">> {
+    extends PageTurning, Partial<Pick<Message, "read">> {
     /** @param startTime 开始时间 */
     startTime?: Date;
     /** @param endTime 结束时间 */
@@ -136,5 +136,31 @@ export namespace TypeCommon {
      * @param key 内部验证
      */
     key: string;
+  }
+
+  /**
+   * @name DeepPartial 嵌套对象也可以为选空
+   */
+  export type DeepPartial<T> = {
+    [P in keyof T]?: T[P] extends (infer U)[]
+      ? DeepPartial<U>[]
+      : T[P] extends object
+        ? DeepPartial<T[P]>
+        : T[P];
+  };
+
+  /**
+   * @name Valueof 取对象的value
+   */
+  export type ValueOf<T> = T[keyof T];
+
+  /**
+   * @name FileDTO 上传资源
+   */
+  export interface FileDTO {
+    name: string;
+    path: string;
+    size: number;
+    type: number;
   }
 }

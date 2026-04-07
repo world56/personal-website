@@ -18,8 +18,9 @@
 
 ## ✨ 技术栈
 
-- 🍔 **Next.JS** (App Router)
+- 🍔 **Next.JS** (Actions)
 - 🥪 **TypeScript**
+- 📦 **React Query**
 - 🧑‍🎨 **Tailwind CSS** (shadcn/ui)
 - 🍟 **Prisma** (MySQL)
 
@@ -49,8 +50,8 @@
 - 🙋‍♂️ **后台管理**  
   网站信息、个人信息编辑，内容管理、留言管理、静态资源管理等[相关功能](https://github.com/world56/static/tree/main/website#-%E6%95%88%E6%9E%9C%E5%9B%BE%E9%A2%84%E8%A7%88)
 
-- 🤩 **访客日志**  
-  访客日志功能，帮助您了解访客的访问频率。
+- 🤩 **访问日志**  
+  访问日志功能，帮助您了解访客的访问频率、识别恶意请求。
 
 - 🐳 **Docker**  
   支持 docker 多个镜像源，一键部署，降低心智负担
@@ -69,6 +70,9 @@ SECRET = your_key
 # zh-Hant 繁體中文
 # en      English
 LANG = zh-Hans
+
+# 站点对外访问的根地址（用于生成 robots.txt / sitemap.xml 的绝对链接，提升SEO效率）
+SITE_URL = https://your_website.com
 ```
 
 ## 👷 本地开发 Development
@@ -83,9 +87,7 @@ $ npx prisma db push
 $ npm run dev
 ```
 
-## 🧑‍💼 生产部署 Production
-
-### 🐳 Docker
+## 🐳 生产部署 Production
 
 #### 1.拉取镜像
 
@@ -100,37 +102,7 @@ $ docker pull registry.cn-hangzhou.aliyuncs.com/world56/website
 
 ```bash
 # 静态资源托管在/app/resource目录，请绑定数据卷（-v），防止资源丢失。
-$ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e SECRET=your_key -e LANG=zh-Hans -v ~/app/website/resource:/app/resource world56/website
-```
-
----
-
-### 🕷️PM2
-
-<p><a href='https://github.com/Unitech/pm2'>PM2</a >是NodeJS应用生产环境进程管理器，可在生产环境中管理并维持Node应用运行。</p >
-
-<p><b>构建准备</b>：NodeJS版本号<b>v20.9.0</b>，配置<b>.env</b>相关变量，全局安装 <a href='https://github.com/Unitech/pm2'><b>PM2</b></a >。</p >
-
-<p><b>警告‼️</b>：resource 目录用于托管静态资源，<b>构建时，会先删除之前的build目录，在生成新的build目录，这会导致build目录下的resource目录重新生成</b>。若您要坚持自己手动部署，可先在本地构建，然后在上传服务器部署。</p >
-
-```bash
-# 1.生成 Prisma Client（仅需执行一次）
-$ npx prisma generate
-
-# 2.创建、关联数据库表（仅需执行一次）
-$ npx prisma db push
-
-# 3.编译构建
-$ npm run build
-
-# 4.打开build文件夹（编译后的输出文件）
-$ cd build
-
-# 5.通过pm2启动并托管
-$ pm2 start pm2.json
-
-# 6.查看pm2托管应用存活状态
-$ pm2 ls
+$ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e SECRET=your_key -e LANG=zh-Hans -e SITE_URL=https://your_website.com -v ~/app/website/resource:/app/resource world56/website
 ```
 
 ---
@@ -144,22 +116,28 @@ $ pm2 ls
 server {
  ...
  location / {
-  proxy_set_header X-Real-IP $remote_addr; # “访问日志”功能
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; # “访问日志”功能
-  proxy_pass http://127.0.0.1:8001;  # website服务端口
+   proxy_pass http://127.0.0.1:3000; # website服务端口（自定义）
+   proxy_set_header Host              $host;  # “Server Actions” 功能
+   proxy_set_header X-Forwarded-Proto $scheme; # “Server Actions” 功能
+   proxy_set_header X-Real-IP         $remote_addr; # “日志管理” 功能
+   proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for; # “日志管理” 功能
  }
 
  location /api/auth/upload {
-  client_max_body_size 32M; # “上传资源”功能
-  proxy_pass http://127.0.0.1:8001; # website服务端口
+  client_max_body_size 21M; # “上传资源” 功能
+  proxy_pass http://127.0.0.1:3000; # website服务端口（自定义）
  }
 }
 
 ```
 
 ## 🚀 迁移升级
-仍在使用1.3.0以下版本号的用户，若升级至1.3.0及以上版本，需要手动执行[SQL文件](./upgrade/post_type.sql)。此次升级修改了post表type字段类型，为未来应用可扩展做好准备。
 
+#### v1.3.0
+升级至 1.3.0 及以上版本，需要手动执行[SQL文件](./scripts/sql/post_type.sql)（提升可扩展性）。
+
+#### v2.0.0
+升级至 2.0.0 及以上版本，需参考上述[Nginx配置](./scripts/nginx/server_actions.conf)（适配 Server Actions）。
 
 ## 🔍 访问地址（例）
 

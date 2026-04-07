@@ -2,61 +2,60 @@
 
 import { set } from "date-fns";
 import { toast } from "sonner";
-import { useRequest } from "ahooks";
+import { useState } from "react";
 import Card from "@/components/Card";
-import { readMessage } from "@/app/api";
 import Select from "@/components/Select";
 import { dateToTime } from "@/lib/format";
-import Details from "./component/Details";
-import { useMemo, useState } from "react";
 import DataTable from "@/components/Table";
 import Confirm from "@/components/Confirm";
 import Tooltip from "@/components/Tooltip";
 import { useTranslations } from "next-intl";
+import Details from "./_components/Details";
 import { Button } from "@/components/ui/button";
-import LoadingButton from "@/components/Button";
 import { SyncOutlined } from "@ant-design/icons";
 import PageTurning from "@/components/PageTurning";
-import { deleteMessage, getMessages } from "@/app/api";
-import { DateRangePicker } from "@/components/DatePicker";
+import LoadingButton from "@/components/LoadButton";
+import DateRangePicker from "@/components/DatePicker";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteMessage, getMessages, messageRead } from "@/actions/message";
 
-import type { Msg } from "@prisma/client";
+import type { Message } from "model";
 import type { DateRange } from "react-day-picker";
 import type { ColumnDef } from "@tanstack/react-table";
 
 const Contact = () => {
-  const t = useTranslations("messages");
-  const tCommon = useTranslations("common");
+  const t = useTranslations();
+  const queryClient = useQueryClient();
 
-  const [msg, setMsg] = useState<Msg>();
-  const [deleteId, setDeleteId] = useState<Msg["id"]>();
+  const [message, setMessage] = useState<Message>();
+  const [deleteId, setDeleteId] = useState<Message["id"]>();
 
-  const [query, setQuery] = useState<Parameters<typeof getMessages>[number]>({
-    current: 1,
-    pageSize: 15,
+  const [query, setQuery] = useState<
+    Parameters<Awaited<typeof getMessages>>[number]
+  >({ current: 1, pageSize: 15 });
+
+  const { data, isFetching } = useQuery({
+    queryKey: ["messages", query],
+    queryFn: () => getMessages(query),
+    placeholderData: (p) => p,
   });
 
-  const { data, loading, run } = useRequest(
-    (params?: typeof query) => getMessages(params || query),
-    { debounceWait: 100, refreshDeps: [query] },
-  );
-
-  async function onDelete(id?: Msg["id"]) {
+  async function onDelete(id?: Message["id"]) {
     if (id) {
       await deleteMessage({ id });
-      toast.success(tCommon("deleteSuccess"));
-      run(query);
+      toast.success(t("common.deleteSuccess"));
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     }
     setDeleteId(undefined);
   }
 
-  async function onRead(row: Msg) {
-    await readMessage({ id: row.id });
-    toast.success(t("tag"));
-    run();
+  async function onRead(row: Message) {
+    await messageRead({ id: row.id });
+    toast.success(t("messages.tag"));
+    queryClient.invalidateQueries({ queryKey: ["messages"] });
   }
 
-  function onConfirmDelete(row: Msg) {
+  function onConfirmDelete(row: Message) {
     setDeleteId(row.id);
   }
 
@@ -82,18 +81,19 @@ const Contact = () => {
   }
 
   function onClose() {
-    setMsg(undefined);
-    run();
+    setMessage(undefined);
+    queryClient.invalidateQueries({ queryKey: ["messages"] });
   }
 
-  const columns: ColumnDef<Msg>[] = [
+  const columns: ColumnDef<Message>[] = [
     {
       accessorKey: "name",
-      header: t("leaverMessage"),
+      header: t("messages.leaverMessage"),
       cell: ({ row }) => (
         <Tooltip
+          maxWidth="15rem"
+          className="truncate"
           title={row.original.name}
-          className="truncate w-full text-left inline py-2 px-1"
         >
           {row.original.name}
         </Tooltip>
@@ -101,12 +101,9 @@ const Contact = () => {
     },
     {
       accessorKey: "content",
-      header: t("information"),
+      header: t("messages.information"),
       cell: ({ row }) => (
-        <Tooltip
-          title={row.original.content}
-          className="truncate w-full text-left inline py-2 px-1"
-        >
+        <Tooltip className="w-71.25 truncate" title={row.original.content}>
           {row.original.content}
         </Tooltip>
       ),
@@ -114,7 +111,7 @@ const Contact = () => {
     {
       accessorKey: "read",
       size: 50,
-      header: t("status"),
+      header: t("messages.status"),
       cell: ({ row }) => {
         const { read } = row.original;
         const color = read ? "dark:text-muted-foreground" : "text-red-500";
@@ -124,16 +121,16 @@ const Contact = () => {
             disabled={read}
             onClick={() => onRead(row.original)}
             className={`mx-auto block p-0 ${color}`}
-            title={read ? undefined : t("readClick")}
+            title={read ? undefined : t("messages.readClick")}
           >
-            {read ? t("read") : t("unread")}
+            {read ? t("messages.read") : t("messages.unread")}
           </Tooltip>
         );
       },
     },
     {
       accessorKey: "createTime",
-      header: t("time"),
+      header: t("messages.time"),
       size: 80,
       cell: ({ row }) => (
         <p className="text-center">{dateToTime(row.original.createTime)}</p>
@@ -141,61 +138,62 @@ const Contact = () => {
     },
     {
       accessorKey: "id",
-      header: tCommon("operate"),
+      header: t("common.operate"),
       size: 80,
       cell: ({ row }) => (
         <div className="flex justify-center">
-          <Button
-            variant="link"
-            className="p-"
-            onClick={() => setMsg(row.original)}
-          >
-            {tCommon("preview")}
+          <Button variant="link" onClick={() => setMessage(row.original)}>
+            {t("common.preview")}
           </Button>
           <Button
             variant="link"
             className="p-2 text-red-500"
             onClick={() => onConfirmDelete(row.original)}
           >
-            {tCommon("delete")}
+            {t("common.delete")}
           </Button>
         </div>
       ),
     },
   ];
 
-  const SELECT_ITEMS = useMemo(
-    () => [
-      { value: "true", label: t("read") },
-      { value: "false", label: t("unread") },
-    ],
-    [t],
-  );
+  const SELECT_ITEMS = [
+    { value: "true", label: t("messages.read") },
+    { value: "false", label: t("messages.unread") },
+  ];
 
   return (
-    <Card spacing={4} title={t("title")} description={t("description")}>
+    <Card
+      gap={4}
+      title={t("messages.title")}
+      description={t("messages.description")}
+    >
       <div className="flex">
         <Select
           value={query.read}
           items={SELECT_ITEMS}
           onChange={onSelectRead}
-          placeholder={t("status")}
+          placeholder={t("messages.status")}
         />
         <DateRangePicker onChange={onTimeChange} className="mx-3" />
         <LoadingButton
-          loading={loading}
+          onClick={onClose}
           icon={SyncOutlined}
-          onClick={() => run()}
+          loading={isFetching}
         />
       </div>
-      <DataTable loading={loading} columns={columns} data={data?.list || []} />
+      <DataTable
+        data={data?.list}
+        loading={isFetching}
+        columns={columns as []}
+      />
       <PageTurning
         total={data?.total}
         current={query.current}
         pageSize={query.pageSize}
         onChange={onPageTurningChange}
       />
-      <Details data={msg} onClose={onClose} />
+      <Details data={message} onClose={onClose} />
       <Confirm id={deleteId} onOk={onDelete} onCancel={onDelete} />
     </Card>
   );

@@ -1,13 +1,15 @@
-import "./globals.css";
+import "./global.css";
+import "./global.sass";
 import Script from "next/script";
-import { Toaster } from "sonner";
 import { DBlocal } from "@/lib/db";
+import { getSiteOrigin } from "@/lib/origin";
+import { Toaster } from "@/components/ui/sonner";
 import { NextIntlClientProvider } from "next-intl";
 import ThemeProvider from "@/components/ThemeProvider";
+import QueryProvider from "@/components/QueryProvider";
 import { getLocale, getMessages } from "next-intl/server";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
-import { API_RESOURCE } from "./api";
+import { API_RESOURCE } from "@/config/common";
 
 export async function generateMetadata() {
   const config = DBlocal.get();
@@ -15,32 +17,38 @@ export async function generateMetadata() {
   return {
     title: config.title,
     description: config.description,
+    metadataBase: new URL(getSiteOrigin()),
     icons: config.favicon ? { icon: favicon, apple: favicon } : undefined,
   };
 }
 
-interface TypeAppEntranceProps extends Record<"children", React.ReactNode> {}
+interface TypeLayoutProps {
+  children: React.ReactNode;
+}
 
-const Layout: React.FC<TypeAppEntranceProps> = async ({ children }) => {
+const Layout: React.FC<TypeLayoutProps> = async ({ children }) => {
   const [locale, messages] = await Promise.all([getLocale(), getMessages()]);
+
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body>
-        <NextIntlClientProvider messages={messages}>
-          <ThemeProvider
-            enableSystem
-            attribute="class"
-            defaultTheme="system"
-            disableTransitionOnChange
-          >
-            <TooltipProvider delayDuration={150}>{children}</TooltipProvider>
-            <Toaster
-              richColors
-              closeButton
-              expand={false}
-              position="top-right"
-            />
-          </ThemeProvider>
+      <body className="md:w-7xl mx-auto! relative! left-0! right-0! px-0!">
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <QueryProvider>
+            <ThemeProvider
+              enableSystem
+              attribute="class"
+              defaultTheme="system"
+              disableTransitionOnChange
+            >
+              {children}
+              <Toaster
+                richColors
+                closeButton
+                expand={false}
+                position="top-right"
+              />
+            </ThemeProvider>
+          </QueryProvider>
         </NextIntlClientProvider>
         <Script src="/lib/player/index.js" strategy="lazyOnload" />
       </body>

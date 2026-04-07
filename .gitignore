@@ -6,6 +6,9 @@
 /.pnp
 .pnp.js
 
+# orm
+/generated
+
 # testing
 /coverage
 

@@ -8,8 +8,11 @@ import {
 } from "fs";
 import { join } from "path";
 import { Cacheable } from "cacheable";
-import { PrismaClient } from "@prisma/client";
 import { checkLanguage } from "@/lib/language";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaClient } from "../../generated/prisma/client";
+
+import { ENUM_COMMON } from "@/enum/common";
 
 import type { CacheableOptions } from "cacheable";
 
@@ -29,6 +32,7 @@ class LocalStorage {
       const data = { ...this.get(), ...obj };
       const writer = createWriteStream(this.FILE_PATH, { autoClose: true });
       writer.write(JSON.stringify(data));
+      writer.end();
       return data;
     } catch (error) {
       console.log("ERROR-LocalStorage-SET", error);
@@ -67,7 +71,7 @@ class LocalStorage {
    */
   language() {
     const language = this.get().language || process.env.LANG;
-    return checkLanguage(language) ? language : "zh-Hans";
+    return checkLanguage(language as ENUM_COMMON.LANG) ? language : "zh-Hans";
   }
 }
 
@@ -97,7 +101,9 @@ class MemoryStorage extends Cacheable {
   }
 }
 
-const prisma = global.prisma || new PrismaClient();
+const prisma =
+  global.prisma ||
+  new PrismaClient({ adapter: new PrismaMariaDb(process.env.DATABASE_URL!) });
 global.prisma = prisma;
 
 const DBlocal = global.DBlocal || new LocalStorage();

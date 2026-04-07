@@ -1,24 +1,3 @@
-.no-tailwindcss
-  > *:not(.media-controller):not(.media-controller *):not(
-    .mce-resizehandle
-  ):not(.tiny-pageembed *):not(.main-title):not(.tiny-pageembed):not(
-    blockquote
-  ):not(h1) {
-  margin: revert;
-  height: revert;
-  display: revert;
-  outline: revert;
-  padding: revert;
-  font-size: revert;
-  max-width: revert;
-  list-style: revert;
-  font-weight: revert;
-  border-width: revert;
-  border-style: revert;
-  border-color: revert;
-  vertical-align: revert;
-}
-
 .mce-content-body,
 .mce-content-body ul li span,
 .mce-content-body ol li span {
@@ -176,7 +155,15 @@
 .dark {
   .main-title {
     color: white;
-    background: #34363c;
+    background: #27272a;
+  }
+
+  .tox .tox-number-input input:disabled {
+    background: transparent;
+  }
+
+  .tox .tox-number-input button:disabled {
+    background: transparent;
   }
 
   .tox-tinymce {

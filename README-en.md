@@ -18,63 +18,67 @@ English · [中文](./README.md)
 
 ## ✨ Tech Stack
 
-- 🍔 **Next.JS** (App Router)
+- 🍔 **Next.JS** (Actions)
 - 🥪 **TypeScript**
+- 📦 **React Query**
 - 🧑‍🎨 **Tailwind CSS** (shadcn/ui)
 - 🍟 **Prisma** (MySQL)
 
 ## 💡 Highlights
 
-- 📱 **Mobile Responsive**  
-  Responsive layout, optimized for low-resolution devices.
+- 📱 **Mobile-friendly**  
+  Responsive layout that supports low-resolution devices.
 
-- 🌗 **Light & Dark Theme Support**  
-  Automatically switches between light and dark mode based on system settings.
+- 🌗 **Light/Dark Theme Support**  
+  Automatically switches between light and dark themes based on system settings.
 
-- 📖 **Multilingual Support**  
+- 📖 **Multilingual**  
   Supports Simplified Chinese, Traditional Chinese, and English.
 
 - 🌏 **SEO**  
-  Well-optimized for search engines, supporting major search platforms. [SEO Preview](https://github.com/world56/static/tree/main/website#-seo%E6%95%88%E6%9E%9C%E9%A2%84%E8%A7%88)
+  In-depth SEO practice, supporting major search engines. [SEO](https://github.com/world56/static/tree/main/website#-seo%E6%95%88%E6%9E%9C%E9%A2%84%E8%A7%88)
 
 - 🥯 **Incremental Rendering**  
-  Uses SSG and ISR rendering to significantly improve performance.
+  Uses SSG and ISR rendering to greatly improve rendering efficiency.
 
 - 📷 **Resource Compression**  
-  Compresses uploaded images to enhance loading speed and save storage.
+  Compresses uploaded image resources to improve loading speed and reduce storage usage.
 
 - 🧑‍🎨 **Text Editing**  
-  Supports a variety of features, including uploads, tables, audio, video, iframes, and code snippets for multiple programming languages.
+  Supports (including but not limited to): uploads, tables, audio, video, iframe, and code examples in multiple programming languages.
 
-- 🙋‍♂️ **Admin Dashboard**  
-  Manage site information, personal details, content, messages, and static resources. [More details](https://github.com/world56/static/tree/main/website#-%E6%95%88%E6%9E%9C%E5%9B%BE%E9%A2%84%E8%A7%88)
+- 🙋‍♂️ **Admin Management**  
+  Site info and personal info editing, content management, message management, static resource management, etc. [Related features](https://github.com/world56/static/tree/main/website#-%E6%95%88%E6%9E%9C%E5%9B%BE%E9%A2%84%E8%A7%88)
 
-- 🤩 **Visitor Logs**  
-  Tracks visitor frequency and logs access history.
+- 🤩 **Access Logs**  
+  Access log feature helps you understand visitor frequency and identify malicious requests.
 
 - 🐳 **Docker**  
-  Supports multiple Docker image sources, enabling one-click deployment with minimal setup.
+  Supports multiple Docker image sources and one-click deployment, reducing cognitive load.
 
 ## 👮 Environment Variables
 
 ```bash
-# MySQL Address
+# MYSQL URL
 DATABASE_URL = mysql://root:pwd@localhost:3306/website
 
-# System Secret Key (Required)
+# System secret (required)
 SECRET = your_key
 
-# Language Setting (Default: zh-Hans)
+# System language (default: zh-Hans)
 # zh-Hans 简体中文
 # zh-Hant 繁體中文
 # en      English
 LANG = zh-Hans
+
+# Public root URL of your site (used to generate absolute links for robots.txt / sitemap.xml to improve SEO)
+SITE_URL = https://your_website.com
 ```
 
 ## 👷 Local Development
 
 ```bash
-# Note: npx prisma commands only need to be executed once to generate the Prisma client and create/associate database tables.
+# Note: npx prisma related commands only need to run once. They generate Prisma Client and create/link database tables.
 $ git clone https://github.com/world56/website.git
 $ cd website
 $ npm install
@@ -83,91 +87,68 @@ $ npx prisma db push
 $ npm run dev
 ```
 
-## 🧑‍💼 Production Deployment
+## 🐳 Production Deployment
 
-### 🐳 Docker
-
-#### 1. Pull the Image
+#### 1. Pull image
 
 ```bash
+# Official registry
 $ docker pull world56/website
+# Alibaba Cloud registry
+$ docker pull registry.cn-hangzhou.aliyuncs.com/world56/website
 ```
 
-#### 2. Start the Container
+#### 2. Start container
 
 ```bash
-# Static resources are stored in /app/resource. Mount a volume (-v) to prevent data loss.
-$ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e SECRET=your_key -e LANG=en -v ~/app/website/resource:/app/resource world56/website
-```
-
----
-
-### 🕷️ PM2
-
-<p><a href='https://github.com/Unitech/pm2'>PM2</a> is a production process manager for NodeJS applications, ensuring stability and uptime.</p>
-
-<p><b>Preparation</b>: NodeJS version <b>v20.9.0</b>. Configure <b>.env</b> variables and install <a href='https://github.com/Unitech/pm2'><b>PM2</b></a> globally.</p>
-
-<p><b>Warning‼️</b>: The resource directory hosts static files. <b>During build, the existing build directory is deleted and regenerated, which will reset the resource directory.</b> If you prefer manual deployment, build locally before uploading to the server.</p>
-
-```bash
-# 1. Generate Prisma Client (only needed once)
-$ npx prisma generate
-
-# 2. Create and associate database tables (only needed once)
-$ npx prisma db push
-
-# 3. Build the project
-$ npm run build
-
-# 4. Navigate to the build folder
-$ cd build
-
-# 5. Start and manage with PM2
-$ pm2 start pm2.json
-
-# 6. Check PM2 application status
-$ pm2 ls
+# Static resources are hosted under /app/resource. Please bind a data volume (-v) to avoid resource loss.
+$ docker run -d -p 8001:3000 -e DATABASE_URL=mysql://root:mysql:3306/website -e SECRET=your_key -e LANG=zh-Hans -e SITE_URL=https://your_website.com -v ~/app/website/resource:/app/resource world56/website
 ```
 
 ---
 
-### 🙋‍♂️ Nginx Configuration
+### 🙋‍♂️ About Nginx
 
-<p>If using Nginx as a proxy, <b>please add the following parameters.</b></p>
+<p>If you use Nginx as a reverse proxy, <b>make sure to add the following parameters</b>.</p >
 
 ```bash
+
 server {
  ...
  location / {
-  proxy_set_header X-Real-IP $remote_addr; # Visitor logs
-  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; # Visitor logs
-  proxy_pass http://127.0.0.1:8001;  # Website service port
+   proxy_pass http://127.0.0.1:3000; # website service port (customizable)
+   proxy_set_header Host              $host;  # "Server Actions" feature
+   proxy_set_header X-Forwarded-Proto $scheme; # "Server Actions" feature
+   proxy_set_header X-Real-IP         $remote_addr; # "Log Management" feature
+   proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for; # "Log Management" feature
  }
 
  location /api/auth/upload {
-  client_max_body_size 32M; # Upload resource limit
-  proxy_pass http://127.0.0.1:8001; # Website service port
+  client_max_body_size 21M; # "Upload Resource" feature
+  proxy_pass http://127.0.0.1:3000; # website service port (customizable)
  }
 }
+
 ```
 
-## 🚀 Migration & Upgrades
+## 🚀 Migration & Upgrade
 
-Users still using versions below 1.3.0 need to manually execute the [SQL file](./upgrade/post_type.sql)  
-when upgrading to version 1.3.0 or later.  This upgrade modifies the `type` field in the `post` table to improve future application scalability.
+#### v1.3.0
+When upgrading to 1.3.0 or above, you need to manually execute the [SQL file](./scripts/sql/post_type.sql) (for better scalability).
 
+#### v2.0.0
+When upgrading to 2.0.0 or above, refer to the [Nginx configuration](./scripts/nginx/server_actions.conf) above (for Server Actions compatibility).
 
 ## 🔍 Access URLs (Example)
 
-<p>Public Access: <a href="http://127.0.0.1:3000">http://127.0.0.1:3000</a></p>
-<p>Admin Panel: <a href="http://127.0.0.1:3000/signin">http://127.0.0.1:3000/signin</a> (First-time users need to register as an admin)</p>
+<p>Visitor: <a href="http://127.0.0.1:3000">http://127.0.0.1:3000</a ></p >
+<p>Admin panel: <a href="http://127.0.0.1:3000/signin">http://127.0.0.1:3000/signin</a > (first-time use requires admin registration) </p >
 
-## 📷 Screenshots Preview
+## 📷 Screenshots
 
-[More screenshots, click here](https://github.com/world56/static/tree/main/website#-%E6%95%88%E6%9E%9C%E5%9B%BE%E9%A2%84%E8%A7%88)
+[More detail screenshots, click to view](https://github.com/world56/static/tree/main/website#-%E6%95%88%E6%9E%9C%E5%9B%BE%E9%A2%84%E8%A7%88)
 
 ## 🙏 Special Thanks
 
-This project’s UI inspiration comes from [@codewithsadee](https://github.com/codewithsadee) and his outstanding open-source project [vcard-personal-portfolio](https://github.com/codewithsadee/vcard-personal-portfolio). Grateful for his dedication and open-source spirit.
+The UI inspiration for this project comes from [@codewithsadee](https://github.com/codewithsadee) and his outstanding open-source project [vcard-personal-portfolio](https://github.com/codewithsadee/vcard-personal-portfolio). Grateful for his dedication and open-source spirit.
 

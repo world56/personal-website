@@ -27,10 +27,12 @@
     "submit": "提交留言",
     "formNameNotEmpty": "您的尊称不得为空",
     "formNameTooShort": "您的尊称不得少于2位字符",
+    "formNameTooLong": "您的尊称不得多于20位字符",
     "formPhone": "请输入有效的电话号码（区号用-隔开）",
     "formEmail": "请输入有效的邮箱地址",
     "formMessage": "留言不得为空",
-    "formMessageTooShort": "您的留言不得少于5位字符",
+    "formMessageTooShort": "再多写几个字吧",
+    "formMessageTooLong": "留言不得多于500位字符",
     "submitSuccessTitle": "提交成功",
     "submitSuccessContent": "我会查看到您的留言消息，感谢您的留言"
   },
@@ -46,16 +48,19 @@
   },
   "menu": {
     "title": "主页管理",
-    "basic": "基本信息",
+    "website": "站点设置",
+    "personal": "个人信息",
+    "post": "文章管理",
     "life": "个人生活",
     "projects": "学习成果",
     "notes": "学习笔记",
     "message": "留言消息",
     "resource": "资源管理",
     "log": "日志管理",
-    "system": "系统设置"
+    "system": "系统设置",
+    "logout": "退出登录"
   },
-  "basicFormHint": {
+  "basic": {
     "icon": "图标不得为空",
     "name": "名称不得为空",
     "description": "描述不得为空",
@@ -64,19 +69,19 @@
     "fullName": "姓名至少2位字符，且不得为空",
     "position": "岗位、专业名称至少2位字符，且不得为空"
   },
-  "site": {
+  "website": {
     "title": "站点信息",
     "description": "设置站点基本信息，提升SEO质量",
     "icon": "站点图标",
     "iconDesc": "浏览器标签显示的站点图标，支持ico、png、svg等常用格式",
     "siteTitle": "站点标题",
-    "siteTitlePlaceholder": "请输入站点标题",
+    "siteTitlePh": "请输入站点标题",
     "siteTitleDesc": "浏览器标签显示的站点名称",
     "desc": "站点描述",
     "descPlaceholder": "请输入站点描述",
     "descDesc": "搜索引擎会读取该信息，并将其用作搜索结果中的摘要",
     "recorded": "站点备案号",
-    "recordedPlaceholder": "请输入网站备案号",
+    "recordedPh": "请输入网站备案号",
     "recordedDesc": "根据中国大陆法规，域名备案号必须展示在页面底部（根据部署地选填）"
   },
   "personal": {
@@ -84,13 +89,13 @@
     "description": "主页左侧个人信息栏，可配置头像、姓名、岗位、自定义个人标签内容",
     "avatar": "头像",
     "name": "姓名",
-    "namePlaceholder": "请输入您的姓名",
+    "namePh": "请输入您的姓名",
     "position": "岗位",
-    "positionPlaceholder": "请输入您的岗位、专业",
+    "positionPh": "请输入您的岗位、专业",
     "positionDesc": "例如，前端开发工程、数据开发工程师",
     "tag": "个人标签"
   },
-  "introduction": {
+  "intro": {
     "title": "个人简介",
     "description": "更详细地介绍自己的经历、性格、爱好、想法，以便他人能更快了解您"
   },
@@ -110,23 +115,23 @@
   },
   "postEdit": {
     "insert": "新增内容",
-    "update": "编辑内容",
+    "basicInfo": "基本信息",
     "cover": "内容封面",
     "title": "内容标题",
-    "titlePlaceholder": "请输入內容标题",
+    "titlePh": "请输入內容标题",
     "abstract": "内容摘要",
-    "abstractPlaceholder": "请输入內容摘要",
+    "abstractPh": "请输入內容摘要",
     "abstractDesc": "搜索引擎会读取该信息，并将其用作搜索结果中的摘要",
     "textContent": "文本内容",
     "footer": "页脚信息",
-    "footerPlaceholder": "请输入自定义页脚信息",
+    "footerPh": "请输入自定义页脚信息",
     "footerDesc": "位于文本内容底部，居中显示（版权声明、免责声明）",
-    "footerDefaultContent": "© 著作权归作者所有 转载请注明原链接",
+    "footerDefContent": "© 著作权归作者所有 转载请注明原链接",
     "formIcon": "封面图不能为空",
     "formContent": "文本内容不能为空",
     "formTitle": "姓名至少2位字符，且不得为空",
     "formFooter": "页脚信息最多支持30个字符",
-    "formDescription": "摘要最多支持100个字符"
+    "formDesc": "摘要最多支持100个字符"
   },
   "messages": {
     "title": "留言列表",
@@ -179,11 +184,12 @@
     "signin": "系统登陆",
     "access": "访客访问",
     "password": "修改密码",
+    "unauth": "未经授权访问",
     "IPPlaceholder": "请输入完整IP进行查询",
     "timeRangeDesc": "选择时间范围",
     "IPDesc": "访客IP会因多种因素受到干扰，准确性难以保证，仅供参考",
     "deleteHint": "仅可删除访客日志",
-    "code": "状态码",
+    "desc": "备注",
     "createTime": "发生时间",
     "clearLogs": "清空日志",
     "clearLogsHint": "该操作会删除所有的“访客访问”日志记录，请谨慎操作！"
@@ -192,16 +198,17 @@
     "title": "管理员密码",
     "description": "修改您的登陆密码",
     "pwd": "旧密码",
-    "pwdPlaceholder": "请输入旧密码",
+    "pwdPh": "请输入旧密码",
     "pwdDesc": "您正在使用的登陆密码",
     "newPwd": "新密码",
-    "newPwdPlaceholder": "输入新的登陆密码",
+    "newPwdPh": "输入新的登陆密码",
     "newPwdDesc": "支持5到12个字符，包括数字、字母和下划线",
     "confirmPwd": "确认新密码",
-    "confirmPwdPlaceholder": "请再次输入新的登陆密码",
+    "confirmPwdPh": "请再次输入新的登陆密码",
     "confirmPwdDesc": "输入新密码进行二次确认",
     "confirmPwdError": "二次确认密码错误，请检查后重试",
     "success": "修改登陆密码成功",
+    "failed": "修改登录密码失败，请检查后重试",
     "submit": "更新密码"
   },
   "language": {
@@ -278,7 +285,8 @@
     "reqError": "请求异常，请检查后重试",
     "fileLimit": "文件大小超过最大限制",
     "fileTooLarge": "{fileName} 超过上传最大限制 {maxSize}，上传失败",
-    "notFound": "这不是一个有效的（URL）访问地址，请确认后重试。",
+    "notFound": "这不是一个有效的（URL）访问地址",
+    "error": "发生错误，请稍后重试",
     "notFoundGoBack": "返回首页"
   }
 }

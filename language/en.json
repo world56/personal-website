@@ -27,10 +27,12 @@
     "submit": "Send Message",
     "formNameNotEmpty": "Your name cannot be empty",
     "formNameTooShort": "Your name must be at least 2 characters",
+    "formNameTooLong": "Your name must be at most 20 characters",
     "formPhone": "Please enter a valid phone number (use - for area code)",
     "formEmail": "Please enter a valid email address",
     "formMessage": "Message cannot be empty",
-    "formMessageTooShort": "Your message must be at least 5 characters",
+    "formMessageTooShort": "Please enter a longer message",
+    "formMessageTooLong": "Your message must be at most 500 characters",
     "submitSuccessTitle": "Submission Successful",
     "submitSuccessContent": "I will check your message, thank you for your message."
   },
@@ -46,16 +48,19 @@
   },
   "menu": {
     "title": "Homepage Management",
-    "basic": "Basic Information",
+    "website": "Site Settings",
+    "personal": "Personal Information",
+    "post": "Post List",
     "life": "Personal Life",
     "projects": "Project Outcomes",
     "notes": "Study Notes",
     "message": "Message Management",
     "resource": "Resource Management",
     "log": "Log Management",
-    "system": "System Settings"
+    "system": "System Settings",
+    "logout": "Log Out"
   },
-  "basicFormHint": {
+  "basic": {
     "icon": "Icon must not be empty",
     "name": "Name must not be empty",
     "description": "Description must not be empty",
@@ -64,19 +69,19 @@
     "fullName": "Full name must be at least 2 characters and cannot be empty",
     "position": "Position or professional title must be at least 2 characters and cannot be empty"
   },
-  "site": {
+  "website": {
     "title": "Site Information",
     "description": "Set up basic site information to improve SEO quality",
     "icon": "Site Icon",
     "iconDesc": "The site icon displayed in the browser tab, supports common formats like ico, png, svg",
     "siteTitle": "Site Title",
-    "siteTitlePlaceholder": "Please enter the site title",
+    "siteTitlePh": "Please enter the site title",
     "siteTitleDesc": "The site name displayed in the browser tab",
     "desc": "Site Description",
     "descPlaceholder": "Please enter the site description",
     "descDesc": "Search engines will read this information and use it as the summary in search results",
     "recorded": "Site Record Number",
-    "recordedPlaceholder": "Please enter the site record number",
+    "recordedPh": "Please enter the site record number",
     "recordedDesc": "According to regulations in Mainland China, the domain record number must be displayed at the bottom of the page (fill in based on deployment location)"
   },
   "personal": {
@@ -84,13 +89,13 @@
     "description": "The personal information section on the left side of the homepage, where you can configure your avatar, name, position, and custom personal tags",
     "avatar": "Avatar",
     "name": "Name",
-    "namePlaceholder": "Please enter your name",
+    "namePh": "Please enter your name",
     "position": "Position",
-    "positionPlaceholder": "Please enter your position or major",
+    "positionPh": "Please enter your position or major",
     "positionDesc": "For example, Frontend Developer, Data Engineer",
     "tag": "Personal Tags"
   },
-  "introduction": {
+  "intro": {
     "title": "Personal Introduction",
     "description": "Provide a more detailed introduction about your experiences, personality, hobbies, and thoughts so that others can get to know you faster"
   },
@@ -110,23 +115,23 @@
   },
   "postEdit": {
     "insert": "Add New Content",
-    "update": "Edit Content",
+    "basicInfo": "Basic Information",
     "cover": "Content Cover",
     "title": "Content Title",
-    "titlePlaceholder": "Please enter the content title",
+    "titlePh": "Please enter the content title",
     "abstract": "Content Abstract",
-    "abstractPlaceholder": "Please enter the content abstract",
+    "abstractPh": "Please enter the content abstract",
     "abstractDesc": "Search engines will read this information and use it as the summary in search results",
     "textContent": "Text Content",
     "footer": "Footer Information",
-    "footerPlaceholder": "Please enter custom footer information.",
+    "footerPh": "Please enter custom footer information.",
     "footerDesc": "Displayed at the bottom of the text content, centered (e.g., copyright notice, disclaimer)",
-    "footerDefaultContent": "© Copyright belongs to the author. Please indicate the original link when reposting.",
+    "footerDefContent": "© All rights reserved.",
     "formIcon": "Cover image cannot be empty",
     "formContent": "Text content cannot be empty",
     "formTitle": "Name must be at least 2 characters and cannot be empty",
     "formFooter": "Footer information supports up to 30 characters",
-    "formDescription": "Abstract supports up to 100 characters"
+    "formDesc": "Abstract supports up to 100 characters"
   },
   "messages": {
     "title": "Message List",
@@ -179,11 +184,12 @@
     "signin": "System Login",
     "access": "Visitor Access",
     "password": "Password Change",
+    "unauth": "Unauth Access",
     "IPPlaceholder": "Please enter the full IP to search",
     "timeRangeDesc": "Select a time range",
     "IPDesc": "Visitor IPs may be affected by various factors, and accuracy cannot be guaranteed. For reference only.",
     "deleteHint": "Only visitor logs can be deleted",
-    "code": "Status Code",
+    "desc": "Remarks",
     "createTime": "Occurrence Time",
     "clearLogs": "Clear Logs",
     "clearLogsHint": "This action will delete all 'Visitor Access' log records. Please proceed with caution!"
@@ -192,16 +198,17 @@
     "title": "Admin Password",
     "description": "Change your login password",
     "pwd": "Old Password",
-    "pwdPlaceholder": "Please enter your old password",
+    "pwdPh": "Please enter your old password",
     "pwdDesc": "The login password you are currently using",
     "newPwd": "New Password",
-    "newPwdPlaceholder": "Enter a new login password",
+    "newPwdPh": "Enter a new login password",
     "newPwdDesc": "Supports 5 to 12 characters, including numbers, letters, and underscores",
     "confirmPwd": "Confirm New Password",
-    "confirmPwdPlaceholder": "Please re-enter the new login password",
+    "confirmPwdPh": "Please re-enter the new login password",
     "confirmPwdDesc": "Re-enter the new password for confirmation",
     "confirmPwdError": "Confirmation password error, please check and try again",
     "success": "Login password changed successfully",
+    "failed": "Failed to change login password. Please check and try again",
     "submit": "Update Password"
   },
   "language": {
@@ -278,7 +285,8 @@
     "reqError": "Request error. Please check and try again.",
     "fileLimit": "File size exceeds the maximum limit.",
     "fileTooLarge": "{fileName} exceeds the maximum upload limit of {maxSize}. Upload failed.",
-    "notFound": "This is not a valid URL. Please check and try again.",
+    "notFound": "This is not a valid URL",
+    "error": "An error occurred. Please try again later.",
     "notFoundGoBack": "Return to Homepage"
   }
 }

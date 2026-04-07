@@ -3,56 +3,55 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
 
 /**
- * @name MainNavigation 导航-个人主页
+ * @name MainNavigation main 内容页面导航
  */
 const MainNavigation = () => {
   const path = usePathname();
+
   const t = useTranslations("navigation");
 
-  const [name, setName] = useState<string>();
+  const routes = [
+    { url: "/", menu: t("about"), title: "Welcome" },
+    { url: "/life", menu: t("life"), title: "My Life" },
+    {
+      url: "/projects",
+      menu: t("project"),
+      title: t("projectTitle"),
+    },
+    { url: "/notes", menu: t("note"), title: "Notes" },
+    { url: "/message", menu: t("message"), title: "Leave a Message" },
+  ];
 
-  const routes = useMemo(
-    () => [
-      { url: "/", menu: t("about"), title: "Welcome" },
-      { url: "/life", menu: t("life"), title: "My Life" },
-      {
-        url: "/projects",
-        menu: t("project"),
-        title: t("projectTitle"),
-      },
-      { url: "/notes", menu: t("note"), title: "Notes" },
-      { url: "/message", menu: t("message"), title: "Leave a Message" },
-    ],
-    [t],
-  );
-
-  useEffect(() => {
-    setName(
-      routes.find((v) => v.url === `/${path?.split("/")?.at(1) || ""}`)?.title,
-    );
-  }, [routes, path]);
+  const name = routes.find(
+    (v) => v.url === `/${path?.split("/")?.at(1) || ""}`,
+  )?.title;
 
   return (
-    <nav className="md:absolute md:top-[5px] md:h-[65px] w-full z-10 fixed bottom-3 h-[54px] left-0 flex justify-between items-center">
-      <h2 className="md:inline hidden ml-6 font-bold text-2xl select-none">
+    <nav className="md:h-19 md:absolute md:z-10 md:top-0 md:pl-7.5 left-0 w-full h-13.5 z-50 fixed bottom-3 flex md:justify-between justify-center items-center">
+      <span className="md:inline hidden font-bold text-2xl select-none">
         {name}
-      </h2>
-      <ul className="md:mr-5 md:px-0 md:shadow-none md:w-max md:items-center h-full rounded-3xl w-full mx-5 px-[10px] flex justify-between items-center bg-white dark:bg-black shadow-light md:dark:bg-transparent">
+      </span>
+      <ul className="md:px-0 mx-5 md:shadow-none md:items-center md:w-max w-full h-full rounded-3xl px-2.5 z-10 flex justify-between items-center bg-white dark:bg-black shadow-light md:dark:bg-transparent">
         {routes.map((v, i) => (
-          <Link key={v.url} href={v.url} draggable="false">
-            <li
+          <li key={v.url}>
+            <Link
+              href={v.url}
+              draggable="false"
               className={`
               ${i === 0 ? "" : "md:ml-2 ml-0"}
-              ${v.title === name ? "nav-select" : ""}
-              py-[0.4rem] px-[0.4rem] md:py-2 md:px-3 font-medium rounded-full cursor-pointer
+              ${
+                v.title === name
+                  ? "bg-black text-white dark:bg-white dark:text-black"
+                  : ""
+              }
+               py-2.5 px-3 font-medium rounded-full cursor-pointer
               md:hover:text-white md:hover:bg-black md:dark:hover:bg-white md:dark:hover:text-black`}
             >
               {v.menu}
-            </li>
-          </Link>
+            </Link>
+          </li>
         ))}
       </ul>
     </nav>

@@ -4,99 +4,97 @@ import {
   usePathname,
   useSearchParams,
 } from "next/navigation";
-import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { getClientPosts, getPosts } from "@/app/api";
-import { useDebounceEffect, useRequest } from "ahooks";
+import { useEffect, useState } from "react";
+import useDebounceValue from "./useDebounceValue";
+import { getClientPosts, getPosts } from "@/actions/post";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { POST_TYPE } from "@/config/common";
 
 import { ENUM_COMMON } from "@/enum/common";
 
-import type { TypeCommon } from "@/interface/common";
-
 /**
  * @name usePosts 帖子列表
  */
-export default function usePosts(status?: ENUM_COMMON.STATUS) {
+export default function usePosts(defaultStatus?: ENUM_COMMON.STATUS) {
   const t = useTranslations("menu");
 
   const params = useParams<{ type: keyof typeof POST_TYPE }>();
 
-  const type = POST_TYPE[params!.type];
+  const postType = POST_TYPE[params!.type];
 
-  const title = { life: t("life"), notes: t("notes"), projects: t("projects") }[
-    params!.type
-  ];
+  const postTitle = {
+    life: t("life"),
+    notes: t("notes"),
+    projects: t("projects"),
+  }[params!.type];
 
   const router = useRouter();
   const pathname = usePathname();
   const search = useSearchParams();
+  const queryClient = useQueryClient();
 
   const IS_CONSOLE = pathname?.includes("/console");
+  const QUERY_CURRENT_ISNULL = search.get("current") === null;
 
-  const [query, setQuery] = useState<TypeCommon.QueryPosts>({
-    type,
+  const [query, setQuery] = useState({
+    type: postType,
     pageSize: IS_CONSOLE ? 15 : 9,
     current: Number(search?.get("current")) || 1,
-    status: IS_CONSOLE ? getDefaultStatus() : status,
+    status: IS_CONSOLE ? getDefaultStatus() : defaultStatus,
     title: IS_CONSOLE ? search?.get("title") || undefined : undefined,
   });
 
-  const hook = useRequest(
-    () => (IS_CONSOLE ? getPosts(query) : getClientPosts(query)),
-    { debounceWait: 150, refreshDeps: [query] },
-  );
+  const deferredQuery = useDebounceValue(query, IS_CONSOLE ? 200 : 0);
+  const { type, status, title, current, pageSize } = deferredQuery;
+
+  const { data, isFetching } = useQuery({
+    placeholderData: (p) => p,
+    queryKey: ["posts", type, status, title, current, pageSize],
+    queryFn: () => (IS_CONSOLE ? getPosts(query) : getClientPosts(query)),
+  });
 
   function getDefaultStatus() {
     const status = search?.get("status");
-    if (["0", "1"].includes(status!)) {
-      return Number(status);
-    } else {
-      return undefined;
-    }
+    return ["0", "1"].includes(status!) ? Number(status) : undefined;
   }
 
-  useDebounceEffect(
-    () => {
-      const { title, current, status } = query;
-      const search = new URLSearchParams(location.search);
-      title ? search.set("title", title) : search.delete("title");
-      current && search.set("current", String(current));
-      if (IS_CONSOLE) {
-        typeof status === "number"
-          ? search.set("status", String(status))
-          : search.delete("status");
-      }
-      router.replace(`${pathname}?${search.toString()}`);
-    },
-    [query],
-    { wait: 500 },
-  );
+  function onRefresh() {
+    queryClient.invalidateQueries({ queryKey: ["posts"] });
+  }
 
-  const { current, pageSize } = query;
+  useEffect(() => {
+    const { title, current, status } = query;
+    const search = new URLSearchParams(location.search);
+    title ? search.set("title", title) : search.delete("title");
+    current && search.set("current", String(current));
+    if (IS_CONSOLE) {
+      typeof status === "number"
+        ? search.set("status", String(status))
+        : search.delete("status");
+    }
+    router.replace(`${pathname}?${search.toString()}`);
+  }, [deferredQuery,QUERY_CURRENT_ISNULL]);
 
-  useDebounceEffect(
-    () => {
-      const total = hook.data?.total;
-      if (
-        total !== undefined &&
-        current > 1 &&
-        current > Math.ceil(total / pageSize)
-      ) {
-        setQuery((v) => ({ ...v, current: 1 }));
-      }
-    },
-    [hook.data, current, pageSize],
-    { wait: 300 },
-  );
+  useEffect(() => {
+    const total = data?.total;
+    if (
+      total !== undefined &&
+      current > 1 &&
+      current > Math.ceil(total / pageSize)
+    ) {
+      setQuery((v) => ({ ...v, current: 1 }));
+    }
+  }, [data, current, pageSize]);
 
   return {
-    ...hook,
-    type,
-    title,
+    data,
     query,
     setQuery,
+    onRefresh,
+    title: postTitle,
     path: params!.type,
+    loading: isFetching,
   };
 }

@@ -1,19 +1,16 @@
 import sharp from "sharp";
 import * as uuid from "uuid";
-import { stat } from "fs/promises";
-import { writeFile } from "fs/promises";
-import { DBlocal, prisma } from "@/lib/db";
+import { getFileType } from "@/lib/file";
 import { NextResponse } from "next/server";
-import { getFileType } from "@/lib/filter";
+import { DBlocal, prisma } from "@/lib/db";
+import { stat, writeFile } from "fs/promises";
 
 export async function POST(request: Request) {
   const formData = await request.formData();
   const file = formData.get("file") as File;
   let suffix = file.name.split(".").at(-1)?.toLocaleLowerCase();
-  if (!suffix) {
-    return NextResponse.json("Missing file extension", { status: 400 });
-  }
-  let buffer = Buffer.from(await file.arrayBuffer());
+  if (!suffix) return Promise.reject("Missing file extension");
+  let buffer = Buffer.from(new Uint8Array(await file.arrayBuffer())) as Buffer;
   if (["jpg", "jpeg", "png"].includes(suffix)) {
     buffer = await sharp(buffer).webp().toBuffer();
     suffix = "webp";

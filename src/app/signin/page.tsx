@@ -10,18 +10,19 @@ import {
 import md5 from "md5";
 import { z } from "zod";
 import { useState } from "react";
-import { useRequest } from "ahooks";
+import { promptError } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import LoadingButton from "@/components/Button";
+import LoadButton from "@/components/LoadButton";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { existAdmin, signIn, register } from "@/app/api";
-import { useSearchParams, useRouter } from "next/navigation";
+import { hasAdmin, register, signin } from "@/actions/auth";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-const formSchema = z.object({
+const schema = z.object({
   account: z.string().regex(/^[a-zA-Z0-9_]{5,12}$/, {
     message:
       "Supports 5 to 12 characters, including numbers, letters, and underscores.",
@@ -34,29 +35,34 @@ const formSchema = z.object({
 
 const SignIn = () => {
   const router = useRouter();
-  const params = useSearchParams();
   const t = useTranslations("signin");
+  const queryClient = useQueryClient();
 
   const [loading, setLoading] = useState(false);
 
-  const { data, loading: adminLoad } = useRequest(existAdmin);
+  const { data, refetch, isLoading } = useQuery({
+    queryFn: hasAdmin,
+    queryKey: ["hasAdmin"],
+  });
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: { account: "", password: "" },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof schema>) {
     try {
       setLoading(true);
-      const exist = await existAdmin();
+      queryClient.removeQueries({ queryKey: ["hasAdmin"] });
+      const exist = await refetch();
       values.password = md5(values.password);
-      !exist && (await register(values));
-      await signIn(values);
-      const IS_KEEP_ALIVE = params?.get("K") === "1";
-      IS_KEEP_ALIVE ? window.close() : router.push("/console");
+      !exist.data && (await register(values));
+      await signin(values);
+      const HAS_K = new URLSearchParams(window.location.search)?.get("K");
+      HAS_K === "1" ? window.close() : router.push("/console");
       setLoading(false);
     } catch (error) {
+      promptError(error);
       setLoading(false);
     }
   }
@@ -66,10 +72,10 @@ const SignIn = () => {
   }
 
   return (
-    <Card className="w-[400px] mx-auto absolute left-[50%] top-[50%] ml-[-200px] mt-[-198px]">
-      <CardHeader className="pt-[25px] pb-[5px] select-none">
-        <h1 className="text-4xl mt-3 font-bold text-center">Welcome</h1>
-        <p className="!my-5 text-sm text-gray-400 text-center">
+    <Card className="fixed w-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+      <CardHeader className="pt-4 pb-1 select-none">
+        <h1 className="text-4xl font-bold text-center">Welcome</h1>
+        <p className="mt-2 text-sm text-gray-400 text-center">
           {data === false ? t("init") : t("login")}
         </p>
       </CardHeader>
@@ -107,17 +113,17 @@ const SignIn = () => {
             />
 
             <div>
-              <LoadingButton
+              <LoadButton
                 type="submit"
                 className="w-full"
-                loading={loading || adminLoad}
+                loading={loading || isLoading}
               >
-                {loading || adminLoad
+                {loading || isLoading
                   ? t("loading")
                   : data
-                  ? t("signin")
-                  : t("register")}
-              </LoadingButton>
+                    ? t("signin")
+                    : t("register")}
+              </LoadButton>
 
               <Button
                 type="button"

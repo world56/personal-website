@@ -11,102 +11,98 @@ import {
 } from "@/components/ui/form";
 import { z } from "zod";
 import { toast } from "sonner";
-import { useState } from "react";
-import { useRequest } from "ahooks";
 import Card from "@/components/Card";
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import Upload from "@/components/Upload/Image";
-import LoadingButton from "@/components/Button";
 import TxtEditor from "@/components/TextEditor";
 import { Button } from "@/components/ui/button";
+import Error from "@/components/Exception/Error";
+import Empty from "@/components/Exception/Empty";
+import LoadingButton from "@/components/LoadButton";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
-import { getPost, insertPost, updatePost } from "@/app/api";
+import { getPost, insertPost, updatePost } from "@/actions/post";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { POST_TYPE } from "@/config/common";
 
-import type { TypeCommon } from "@/interface/common";
-
 const Edit = () => {
-  const t = useTranslations("postEdit");
-  const tCommon = useTranslations("common");
+  const t = useTranslations();
 
-  const formSchema = z.object({
-    id: z.number().optional(),
-    icon: z.string().min(1, { message: t("formIcon") }),
-    content: z.string().min(1, { message: t("formContent") }),
-    title: z.string().min(2, { message: t("formTitle") }),
-    footer: z.string().max(30, { message: t("formFooter") }),
-    description: z.string().max(100, { message: t("formDescription") }),
+  const schema = z.object({
+    icon: z.string().min(1, { message: t("postEdit.formIcon") }),
+    title: z.string().min(2, { message: t("postEdit.formTitle") }),
+    footer: z.string().max(50, { message: t("postEdit.formFooter") }),
+    content: z.string().min(1, { message: t("postEdit.formContent") }),
+    description: z.string().max(100, { message: t("postEdit.formDesc") }),
   });
 
-  const [submitLoad, setSubmitLoad] = useState(false);
+  const query = useQueryClient();
 
   const router = useRouter();
-
   const params = useParams<Record<"id" | "type", string>>();
-  const id = Number(params?.id!);
-  const type = params?.type! as keyof typeof POST_TYPE;
 
-  const IS_ADD = id === -1;
+  const id = params?.id === "-1" ? undefined : Number(params?.id);
+  const type = POST_TYPE[params?.type! as keyof typeof POST_TYPE];
 
-  const form = useForm<TypeCommon.UpdatePost>({
+  const { data, isLoading, isError } = useQuery({
+    enabled: Boolean(id),
+    queryKey: ["post-edit", id],
+    queryFn: async () => {
+      const post = await getPost({ id: id! });
+      return post ? post : Promise.reject();
+    },
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (v: z.infer<typeof schema>) =>
+      id ? updatePost({ ...v, id, type }) : insertPost({ ...v, type }),
+    onSuccess: () => {
+      toast.success(t("common.saveSuccess"));
+      query.invalidateQueries({ queryKey: ["posts", type] });
+      query.invalidateQueries({ queryKey: ["post-edit", id] });
+      onBack();
+    },
+  });
+
+  const form = useForm({
     mode: "onSubmit",
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(schema),
+    values: data as z.infer<typeof schema>,
     defaultValues: {
       icon: "",
       title: "",
       description: "",
-      footer: t("footerDefaultContent"),
+      footer: t("postEdit.footerDefContent"),
     },
   });
-
-  const { loading } = useRequest(
-    async () => {
-      if (IS_ADD) return;
-      const data = await getPost({ id });
-      form.reset({
-        id: data.id,
-        icon: data.icon,
-        title: data.title,
-        content: data.content,
-        description: data.description!,
-      });
-    },
-    { refreshDeps: [id] },
-  );
-
-  async function onSubmit(values: TypeCommon.UpdatePost) {
-    try {
-      setSubmitLoad(true);
-      values.type = POST_TYPE[type];
-      if (IS_ADD) await insertPost(values);
-      else await updatePost(values);
-      setSubmitLoad(false);
-      toast.success(tCommon("saveSuccess"));
-      onBack();
-    } catch (error) {
-      setSubmitLoad(false);
-    }
-  }
 
   function onBack() {
     router.back();
   }
 
-  return (
+  return isError || Number.isNaN(id) ? (
+    <Card title={t("postEdit.basicInfo")} onBack={onBack}>
+      {isError ? <Empty /> : <Error />}
+    </Card>
+  ) : (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <Card onBack={onBack} title={`${IS_ADD ? t("insert") : t("update")}`}>
+      <form onSubmit={form.handleSubmit((e) => mutate(e))}>
+        <Card
+          onBack={onBack}
+          className="mb-3.5"
+          loading={isLoading}
+          title={t("postEdit.basicInfo")}
+        >
           <FormField
             name="icon"
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("cover")}</FormLabel>
+                <FormLabel>{t("postEdit.cover")}</FormLabel>
                 <FormControl>
                   <Upload radius={false} {...field} size="large" />
                 </FormControl>
@@ -120,9 +116,9 @@ const Edit = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("title")}</FormLabel>
+                <FormLabel>{t("postEdit.title")}</FormLabel>
                 <FormControl>
-                  <Input placeholder={t("titlePlaceholder")} {...field} />
+                  <Input placeholder={t("postEdit.titlePh")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -134,26 +130,12 @@ const Edit = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("abstract")}</FormLabel>
+                <FormLabel>{t("postEdit.abstract")}</FormLabel>
                 <FormControl>
-                  <Textarea placeholder={t("abstractPlaceholder")} {...field} />
+                  <Textarea placeholder={t("postEdit.abstractPh")} {...field} />
                 </FormControl>
                 <FormMessage />
-                <FormDescription>{t("abstractDesc")}</FormDescription>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            name="content"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("textContent")}</FormLabel>
-                <FormControl>
-                  <TxtEditor {...field} />
-                </FormControl>
-                <FormMessage />
+                <FormDescription>{t("postEdit.abstractDesc")}</FormDescription>
               </FormItem>
             )}
           />
@@ -163,27 +145,43 @@ const Edit = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("footer")}</FormLabel>
+                <FormLabel>{t("postEdit.footer")}</FormLabel>
                 <FormControl>
-                  <Input placeholder={t("footerPlaceholder")} {...field} />
+                  <Input placeholder={t("postEdit.footerPh")} {...field} />
                 </FormControl>
                 <FormMessage />
-                <FormDescription>{t("footerDesc")}</FormDescription>
+                <FormDescription>{t("postEdit.footerDesc")}</FormDescription>
               </FormItem>
             )}
           />
         </Card>
+
+        <Card title={t("postEdit.textContent")}>
+          <FormField
+            name="content"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <TxtEditor {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </Card>
+
         <div className="text-center">
-          <LoadingButton loading={loading || submitLoad} type="submit">
-            {tCommon("submit")}
+          <LoadingButton loading={isLoading || isPending} type="submit">
+            {t("common.submit")}
           </LoadingButton>
           <Button
             type="button"
             onClick={onBack}
             variant="outline"
-            className="ml-5 my-5 dark:bg-black"
+            className="ml-5 my-5 dark:bg-black cursor-pointer bg-white"
           >
-            {tCommon("back")}
+            {t("common.back")}
           </Button>
         </div>
       </form>

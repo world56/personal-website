@@ -1,11 +1,12 @@
+import { toast } from "sonner";
 import Image from "next/image";
-import { uploadFile } from "@/app/api";
 import { useTranslations } from "next-intl";
 import { useState, forwardRef } from "react";
-import { getUploadFiles } from "@/lib/filter";
+import { getUploadFiles, upload } from "@/lib/file";
+import { useQueryClient } from "@tanstack/react-query";
 import { CameraFilled, LoadingOutlined } from "@ant-design/icons";
 
-import { API_RESOURCE } from "@/app/api";
+import { API_RESOURCE } from "@/config/common";
 
 import type { ForwardRefRenderFunction } from "react";
 
@@ -17,6 +18,7 @@ type TypeUploadImageRefProps<T = string> = ForwardRefRenderFunction<
     readonly value?: T;
     onChange?(value?: T): void;
     className?: string;
+    noSvgDark?: boolean;
   }
 >;
 
@@ -30,27 +32,37 @@ const SIZE = {
  * @name UploadImage 上传图片
  */
 const UploadImage: TypeUploadImageRefProps = (
-  { size = "middle", radius = true, className = "", value, onChange },
+  {
+    value,
+    onChange,
+    noSvgDark,
+    radius = true,
+    className = "",
+    size = "middle",
+  },
   ref,
 ) => {
-  const t = useTranslations("common");
+  const t = useTranslations();
 
-  const toWhite = size === "small" ? "dark:dark-icon" : "";
+  const queryClient = useQueryClient();
 
   const [load, setLoad] = useState(false);
   const [val, setVal] = useState<string>();
 
   async function onStart() {
     try {
-      const [file] = await getUploadFiles({
-        size: 3145728,
-        accept: ".svg, .jpg, .jpeg, .png, .ico, .webp",
-      });
+      const [file] = await getUploadFiles(
+        ".svg, .jpg, .jpeg, .png, .ico, .webp",
+      );
       setLoad(true);
-      const { path } = await uploadFile(file);
+      const { path } = await upload(file);
+      queryClient.invalidateQueries({ queryKey: ["resource"] });
       updateValue(path);
       setLoad(false);
     } catch (error) {
+      toast.message(t("textEditor.uploadError"), {
+        description: t("hint.error"),
+      });
       setLoad(false);
     }
   }
@@ -59,25 +71,27 @@ const UploadImage: TypeUploadImageRefProps = (
     onChange ? onChange(val) : setVal(val);
   }
 
-  function getValue() {
-    return value || val || "";
-  }
-
-  const RESOURCE_URL = getValue();
-
   const STYLE = SIZE[size];
 
-  const borderRadius = radius ? "rounded-full" : "rounded-md";
+  const RESOURCE_URL = value || val || "";
+
+  const TO_WHITE = size === "small" ? "dark:dark-icon" : "";
+
+  const BORDER_RADIUS = radius ? "rounded-full" : "rounded-md";
+
+  const IS_SVG = noSvgDark
+    ? false
+    : RESOURCE_URL?.split(".")?.at?.(-1) === "svg";
 
   return (
     <div
       ref={ref}
       onClick={onStart}
       className={`
+       dark:text-white dark:hover:border-white
          relative flex justify-center items-center flex-col ${STYLE.IMG} 
          cursor-pointer border border-dashed overflow-hidden select-none ${className}
-        border-gray-400 text-gray-600 hover:border-black hover:text-black ${borderRadius}
-        dark:text-white dark:hover:border-white
+       border-gray-400 text-gray-600 hover:border-black hover:text-black ${BORDER_RADIUS}
       `}
     >
       {RESOURCE_URL ? (
@@ -88,7 +102,8 @@ const UploadImage: TypeUploadImageRefProps = (
             width={STYLE.SIZE}
             height={STYLE.SIZE}
             src={`${API_RESOURCE}${RESOURCE_URL}`}
-            className={`w-full h-full object-cover ${toWhite} ${borderRadius}`}
+            className={`w-full h-full object-cover ${TO_WHITE} 
+            ${radius ? "rounded-full" : "rounded-md"} ${IS_SVG ? "icon" : ""}`}
           />
           {load ? (
             <LoadingOutlined className="text-sm absolute text-black dark:text-white" />
@@ -101,7 +116,7 @@ const UploadImage: TypeUploadImageRefProps = (
           {load ? <LoadingOutlined /> : <CameraFilled />}
           {STYLE?.NAME ? (
             <span className={`mt-1 ${STYLE.NAME}`}>
-              {load ? t("upLoading") : t("lickUpload")}
+              {load ? t("common.upLoading") : t("common.lickUpload")}
             </span>
           ) : null}
         </>
