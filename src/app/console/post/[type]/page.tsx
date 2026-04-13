@@ -127,7 +127,7 @@ const Posts = () => {
               disabled={!status}
               onClick={() => onSkip(row.original)}
               title={status ? undefined : t("common.deleteDesc")}
-              className={`p-2 ${status ? "" : "dark:text-gray-500"}`}
+              className={`p-2 ${status ? "cursor-pointer!" : "dark:text-gray-500"}`}
             >
               {t("common.preview")}
             </Tooltip>
