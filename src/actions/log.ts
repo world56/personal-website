@@ -92,9 +92,9 @@ export const deleteLog = authAction(
     }
     const { KEY_COUNT, KEY_TODAY, KEY_MONTH } = getUTCTime(timeZone);
     await Promise.all([
-      cacheable.delete(KEY_COUNT),
-      cacheable.delete(KEY_TODAY),
-      cacheable.delete(KEY_MONTH),
+      cacheable.decr(KEY_COUNT),
+      cacheable.decr(KEY_TODAY),
+      cacheable.decr(KEY_MONTH),
       prisma.log.delete({ where: { id } }),
     ]);
     return true;
